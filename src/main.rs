@@ -35,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
     let pool = database::init_db_pool().await
         .expect("Failed to initialize database pool");
 
-    let _database_url = env::var("DATABASE_URL")?;
+    // let _database_url = env::var("DATABASE_URL")?;
     let _jwt_secret =
         env::var("JWT_SECRET").unwrap_or_else(|_| "secret-development-key".to_string());
 

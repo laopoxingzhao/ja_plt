@@ -1,6 +1,7 @@
 -- ============================================================
--- 用户相关表
+-- 1. 用户相关表
 -- ============================================================
+
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
     username VARCHAR(50) UNIQUE NOT NULL COMMENT '用户名',
@@ -19,6 +20,7 @@ CREATE TABLE users (
     INDEX idx_status (status)
 ) COMMENT='用户主表';
 
+
 CREATE TABLE user_addresses (
     address_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '地址ID',
     user_id INT NOT NULL COMMENT '用户ID',
@@ -35,9 +37,11 @@ CREATE TABLE user_addresses (
     INDEX idx_user_default (user_id, is_default)
 ) COMMENT='用户地址表';
 
+
 -- ============================================================
--- 服务相关表
+-- 2. 服务分类与服务
 -- ============================================================
+
 CREATE TABLE service_categories (
     category_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '分类ID',
     category_name VARCHAR(50) NOT NULL COMMENT '分类名称',
@@ -49,6 +53,7 @@ CREATE TABLE service_categories (
     FOREIGN KEY (parent_id) REFERENCES service_categories(category_id),
     INDEX idx_parent (parent_id)
 ) COMMENT='服务分类表';
+
 
 CREATE TABLE services (
     service_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '服务ID',
@@ -66,6 +71,7 @@ CREATE TABLE services (
     INDEX idx_active (is_active)
 ) COMMENT='服务项目表';
 
+
 CREATE TABLE service_addons (
     addon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '附加项ID',
     service_id INT NOT NULL COMMENT '服务ID',
@@ -77,9 +83,11 @@ CREATE TABLE service_addons (
     INDEX idx_service (service_id)
 ) COMMENT='服务附加项表';
 
+
 -- ============================================================
--- 服务人员相关表
+-- 3. 工作者相关表
 -- ============================================================
+
 CREATE TABLE worker_profiles (
     worker_id INT PRIMARY KEY COMMENT '服务人员ID',
     service_category_id INT NOT NULL COMMENT '服务分类ID',
@@ -100,23 +108,33 @@ CREATE TABLE worker_profiles (
     INDEX idx_available (is_available)
 ) COMMENT='服务人员详情表';
 
-CREATE TABLE worker_schedules (
-    schedule_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '日程ID',
-    worker_id INT NOT NULL COMMENT '服务人员ID',
-    schedule_date DATE NOT NULL COMMENT '排班日期',
-    time_slot ENUM('morning', 'afternoon', 'evening', 'full_day') NOT NULL COMMENT '时间段',
-    status ENUM('available', 'booked', 'unavailable') DEFAULT 'available' COMMENT '状态',
-    order_id VARCHAR(20) NULL COMMENT '关联订单ID',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    UNIQUE KEY uk_worker_time (worker_id, schedule_date, time_slot),
-    INDEX idx_worker_date (worker_id, schedule_date)
-) COMMENT='服务人员日程表';
 
 -- ============================================================
--- 订单相关表
+-- 4. 优惠券基础表
 -- ============================================================
+
+CREATE TABLE coupons (
+    coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '优惠券ID',
+    coupon_code VARCHAR(20) UNIQUE NOT NULL COMMENT '优惠券码',
+    coupon_name VARCHAR(100) NOT NULL COMMENT '优惠券名称',
+    discount_type ENUM('percentage', 'fixed', 'service') NOT NULL COMMENT '折扣类型',
+    discount_value DECIMAL(10,2) NOT NULL COMMENT '折扣值',
+    min_order_amount DECIMAL(10,2) DEFAULT 0.00 COMMENT '最低订单金额',
+    applicable_services JSON COMMENT '适用服务',
+    valid_from DATE NOT NULL COMMENT '有效期开始',
+    valid_until DATE NOT NULL COMMENT '有效期截止',
+    usage_limit INT DEFAULT 1 COMMENT '使用次数限制',
+    used_count INT DEFAULT 0 COMMENT '已使用次数',
+    is_active BOOLEAN DEFAULT TRUE COMMENT '是否启用',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_code_validity (coupon_code, valid_until, is_active)
+) COMMENT='优惠券表';
+
+
+-- ============================================================
+-- 5. 订单主表（依赖多表）
+-- ============================================================
+
 CREATE TABLE orders (
     order_id VARCHAR(20) PRIMARY KEY COMMENT '订单号',
     customer_id INT NOT NULL COMMENT '客户ID',
@@ -150,6 +168,11 @@ CREATE TABLE orders (
     INDEX idx_date_status (service_date, order_status)
 ) COMMENT='订单主表';
 
+
+-- ============================================================
+-- 6. 订单附加项
+-- ============================================================
+
 CREATE TABLE order_addons (
     order_addon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '订单附加项ID',
     order_id VARCHAR(20) NOT NULL COMMENT '订单ID',
@@ -162,25 +185,29 @@ CREATE TABLE order_addons (
     INDEX idx_order (order_id)
 ) COMMENT='订单附加项表';
 
+
 -- ============================================================
--- 优惠券相关表
+-- 7. 工作者日程（需要 orders）
 -- ============================================================
-CREATE TABLE coupons (
-    coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '优惠券ID',
-    coupon_code VARCHAR(20) UNIQUE NOT NULL COMMENT '优惠券码',
-    coupon_name VARCHAR(100) NOT NULL COMMENT '优惠券名称',
-    discount_type ENUM('percentage', 'fixed', 'service') NOT NULL COMMENT '折扣类型',
-    discount_value DECIMAL(10,2) NOT NULL COMMENT '折扣值',
-    min_order_amount DECIMAL(10,2) DEFAULT 0.00 COMMENT '最低订单金额',
-    applicable_services JSON COMMENT '适用服务',
-    valid_from DATE NOT NULL COMMENT '有效期开始',
-    valid_until DATE NOT NULL COMMENT '有效期截止',
-    usage_limit INT DEFAULT 1 COMMENT '使用次数限制',
-    used_count INT DEFAULT 0 COMMENT '已使用次数',
-    is_active BOOLEAN DEFAULT TRUE COMMENT '是否启用',
+
+CREATE TABLE worker_schedules (
+    schedule_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '日程ID',
+    worker_id INT NOT NULL COMMENT '服务人员ID',
+    schedule_date DATE NOT NULL COMMENT '排班日期',
+    time_slot ENUM('morning', 'afternoon', 'evening', 'full_day') NOT NULL COMMENT '时间段',
+    status ENUM('available', 'booked', 'unavailable') DEFAULT 'available' COMMENT '状态',
+    order_id VARCHAR(20) NULL COMMENT '关联订单ID',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_code_validity (coupon_code, valid_until, is_active)
-) COMMENT='优惠券表';
+    FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    UNIQUE KEY uk_worker_time (worker_id, schedule_date, time_slot),
+    INDEX idx_worker_date (worker_id, schedule_date)
+) COMMENT='服务人员日程表';
+
+
+-- ============================================================
+-- 8. 用户优惠券
+-- ============================================================
 
 CREATE TABLE user_coupons (
     user_coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '用户优惠券ID',
@@ -198,9 +225,11 @@ CREATE TABLE user_coupons (
     INDEX idx_user_unused (user_id, is_used, expires_at)
 ) COMMENT='用户优惠券表';
 
+
 -- ============================================================
--- 评价与投诉表
+-- 9. 评价与投诉
 -- ============================================================
+
 CREATE TABLE reviews (
     review_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '评价ID',
     order_id VARCHAR(20) UNIQUE NOT NULL COMMENT '订单ID',
@@ -219,6 +248,7 @@ CREATE TABLE reviews (
     INDEX idx_order (order_id)
 ) COMMENT='评价表';
 
+
 CREATE TABLE complaints (
     complaint_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '投诉ID',
     order_id VARCHAR(20) NOT NULL COMMENT '订单ID',
@@ -236,9 +266,11 @@ CREATE TABLE complaints (
     INDEX idx_complainant (complainant_id)
 ) COMMENT='投诉表';
 
+
 -- ============================================================
--- 支付与交易表
+-- 10. 支付表
 -- ============================================================
+
 CREATE TABLE payments (
     payment_id VARCHAR(30) PRIMARY KEY COMMENT '支付ID',
     order_id VARCHAR(20) NOT NULL COMMENT '订单ID',
@@ -255,9 +287,11 @@ CREATE TABLE payments (
     INDEX idx_user_time (user_id, payment_time DESC)
 ) COMMENT='支付记录表';
 
+
 -- ============================================================
--- 系统功能表
+-- 11. 系统配置与通知
 -- ============================================================
+
 CREATE TABLE system_settings (
     setting_key VARCHAR(50) PRIMARY KEY COMMENT '配置键',
     setting_value TEXT COMMENT '配置值',
@@ -265,6 +299,7 @@ CREATE TABLE system_settings (
     description TEXT COMMENT '描述',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) COMMENT='系统配置表';
+
 
 CREATE TABLE notifications (
     notification_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '消息ID',
