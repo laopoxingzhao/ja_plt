@@ -1,0 +1,110 @@
+2025-12-07T06:33:30.528745Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:34:28.136594Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:34:47.732242Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:35:24.593435Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:35:24.594794Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T06:35:33.443709Z  INFO 开始处理请求: GET /
+2025-12-07T06:35:33.444499Z  INFO 请求完成: GET / - 状态码: 200 OK - 耗时: 789.4µs
+2025-12-07T06:35:55.605548Z  INFO 开始处理请求: GET /app
+2025-12-07T06:35:55.606444Z  INFO 请求完成: GET /app - 状态码: 404 Not Found - 耗时: 894.8µs
+2025-12-07T06:36:20.258606Z  INFO 开始处理请求: GET /app/index.html
+2025-12-07T06:36:20.259609Z  INFO 请求完成: GET /app/index.html - 状态码: 404 Not Found - 耗时: 1.0011ms
+2025-12-07T06:36:45.820050Z  INFO 开始处理请求: GET /app
+2025-12-07T06:36:45.821219Z  INFO 请求完成: GET /app - 状态码: 404 Not Found - 耗时: 1.1672ms
+2025-12-07T06:37:41.413381Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T06:37:41.414110Z  INFO 请求完成: POST /api/users/login - 状态码: 400 Bad Request - 耗时: 729.2µs
+2025-12-07T06:37:46.704161Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T06:37:46.704553Z  INFO 请求完成: POST /api/users/login - 状态码: 400 Bad Request - 耗时: 395.8µs
+2025-12-07T06:37:53.684805Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T06:37:53.685226Z  INFO 请求完成: POST /api/users/login - 状态码: 400 Bad Request - 耗时: 429.8µs
+2025-12-07T06:37:59.523261Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T06:37:59.524200Z  INFO 请求完成: POST /api/users/login - 状态码: 400 Bad Request - 耗时: 941.9µs
+2025-12-07T06:38:06.120798Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T06:38:07.148178Z  INFO 请求完成: POST /api/users/login - 状态码: 200 OK - 耗时: 1.0273586s
+2025-12-07T06:38:26.662047Z  INFO 开始处理请求: GET /app
+2025-12-07T06:38:26.662678Z  INFO 请求完成: GET /app - 状态码: 404 Not Found - 耗时: 637.6µs
+2025-12-07T06:42:33.467573Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:42:56.150358Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:42:56.151670Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T06:44:41.341181Z  INFO 开始处理请求: GET /
+2025-12-07T06:44:41.341537Z  INFO 请求完成: GET / - 状态码: 200 OK - 耗时: 365.8µs
+2025-12-07T06:44:48.638268Z  INFO 开始处理请求: GET /app
+2025-12-07T06:44:48.639393Z  INFO 请求完成: GET /app - 状态码: 404 Not Found - 耗时: 1.1231ms
+2025-12-07T06:44:58.388582Z  INFO 开始处理请求: GET /app
+2025-12-07T06:44:58.389250Z  INFO 请求完成: GET /app - 状态码: 404 Not Found - 耗时: 670.5µs
+2025-12-07T06:45:30.351162Z  INFO 开始处理请求: GET /app/index.html
+2025-12-07T06:45:30.352222Z  INFO 请求完成: GET /app/index.html - 状态码: 404 Not Found - 耗时: 1.0841ms
+2025-12-07T06:45:33.795990Z  INFO 开始处理请求: GET /app/index.html
+2025-12-07T06:45:33.796513Z  INFO 请求完成: GET /app/index.html - 状态码: 404 Not Found - 耗时: 528.5µs
+2025-12-07T06:47:30.709668Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:47:30.710611Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T06:47:41.098705Z  INFO 开始处理请求: GET /
+2025-12-07T06:47:41.099113Z  INFO 请求完成: GET / - 状态码: 200 OK - 耗时: 418.4µs
+2025-12-07T06:48:06.347070Z  INFO 开始处理请求: GET /app
+2025-12-07T06:48:06.348173Z  INFO 请求完成: GET /app - 状态码: 404 Not Found - 耗时: 1.105ms
+2025-12-07T06:48:16.412507Z  INFO 开始处理请求: GET /app/index.html
+2025-12-07T06:48:16.413863Z  INFO 请求完成: GET /app/index.html - 状态码: 404 Not Found - 耗时: 1.3589ms
+2025-12-07T06:54:58.150760Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T06:54:58.151944Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T06:54:59.739679Z  INFO 开始处理请求: GET /
+2025-12-07T06:54:59.740165Z  INFO 请求完成: GET / - 状态码: 200 OK - 耗时: 489.8µs
+2025-12-07T06:55:17.256825Z  INFO 开始处理请求: GET /app
+2025-12-07T06:55:17.258399Z  INFO 请求完成: GET /app - 状态码: 200 OK - 耗时: 1.5751ms
+2025-12-07T06:58:18.167952Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T06:58:19.220320Z  INFO 请求完成: POST /api/users/login - 状态码: 200 OK - 耗时: 1.052371s
+2025-12-07T07:33:07.906190Z  INFO 开始处理请求: GET /app
+2025-12-07T07:33:07.907428Z  INFO 请求完成: GET /app - 状态码: 304 Not Modified - 耗时: 1.2403ms
+2025-12-07T07:55:24.485051Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T07:57:56.311902Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T07:57:56.366883Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T07:58:04.815382Z  INFO 开始处理请求: GET /app
+2025-12-07T07:58:04.817421Z  INFO 请求完成: GET /app - 状态码: 304 Not Modified - 耗时: 2.0296ms
+2025-12-07T09:23:23.471505Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T09:23:23.542085Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T09:25:02.740111Z  INFO 开始处理请求: GET /app
+2025-12-07T09:25:02.741309Z  INFO 请求完成: GET /app - 状态码: 304 Not Modified - 耗时: 1.1997ms
+2025-12-07T09:25:05.253935Z  INFO 开始处理请求: GET /app
+2025-12-07T09:25:05.254858Z  INFO 请求完成: GET /app - 状态码: 304 Not Modified - 耗时: 926.2µs
+2025-12-07T09:25:07.372049Z  INFO 开始处理请求: GET /app
+2025-12-07T09:25:07.373015Z  INFO 请求完成: GET /app - 状态码: 304 Not Modified - 耗时: 965.6µs
+2025-12-07T09:34:18.641047Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T09:34:18.669240Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T09:44:32.351068Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T09:44:32.372384Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T09:44:42.244175Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:44:42.287703Z ERROR 登录错误: DatabaseError(Database(MySqlDatabaseError { code: Some("42S02"), number: 1146, message: "Table 'jz_db.users' doesn't exist" }))
+2025-12-07T09:44:42.288199Z  INFO 请求完成: POST /api/users/login - 状态码: 500 Internal Server Error - 耗时: 44.0298ms
+2025-12-07T09:44:49.651535Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:44:49.654076Z ERROR 登录错误: DatabaseError(Database(MySqlDatabaseError { code: Some("42S02"), number: 1146, message: "Table 'jz_db.users' doesn't exist" }))
+2025-12-07T09:44:49.654387Z  INFO 请求完成: POST /api/users/login - 状态码: 500 Internal Server Error - 耗时: 2.8594ms
+2025-12-07T09:44:54.148487Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:44:54.151446Z ERROR 登录错误: DatabaseError(Database(MySqlDatabaseError { code: Some("42S02"), number: 1146, message: "Table 'jz_db.users' doesn't exist" }))
+2025-12-07T09:44:54.151831Z  INFO 请求完成: POST /api/users/login - 状态码: 500 Internal Server Error - 耗时: 3.3548ms
+2025-12-07T09:45:30.380233Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T09:45:30.395714Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T09:45:32.761455Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:32.780810Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 19.345ms
+2025-12-07T09:45:36.092405Z  INFO 开始处理请求: GET /app
+2025-12-07T09:45:36.093801Z  INFO 请求完成: GET /app - 状态码: 304 Not Modified - 耗时: 1.3981ms
+2025-12-07T09:45:39.580669Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:39.583602Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 2.933ms
+2025-12-07T09:45:42.816462Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:42.819250Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 2.792ms
+2025-12-07T09:45:43.428244Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:43.432007Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 3.7584ms
+2025-12-07T09:45:43.627318Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:43.629931Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 2.6118ms
+2025-12-07T09:45:43.803548Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:43.806578Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 3.0312ms
+2025-12-07T09:45:44.023509Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:45:44.026749Z  INFO 请求完成: POST /api/users/login - 状态码: 401 Unauthorized - 耗时: 3.2334ms
+2025-12-07T09:47:06.144093Z  INFO 开始处理请求: POST /api/users/register
+2025-12-07T09:47:06.712030Z  INFO 开始处理请求: POST /api/users/register
+2025-12-07T09:47:06.715298Z  INFO 请求完成: POST /api/users/register - 状态码: 400 Bad Request - 耗时: 3.2684ms
+2025-12-07T09:48:01.305336Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:48:01.309848Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:48:11.713188Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:48:18.207827Z  INFO 开始处理请求: POST /api/users/login
+2025-12-07T09:52:30.121164Z  INFO 日志系统已初始化（文件: logs/jz.log，控制台输出已启用）
+2025-12-07T09:52:30.139638Z  INFO 家政服务API服务器启动于 http://127.0.0.1:3000
+2025-12-07T09:52:30.238826Z  INFO 开始处理请求: POST /api/users/login

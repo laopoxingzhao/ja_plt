@@ -1,0 +1,29 @@
+[package]
+name = "jz"
+version = "0.1.0"
+edition = "2024"
+authors = ["hu"]
+license = "MIT"
+
+[dependencies]
+axum = "0.8.7"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sqlx = { version = "0.8.6", features = ["sqlite", "mysql", "macros", "runtime-tokio-rustls", "chrono"] }
+uuid = { version = "1", features = ["v4"] }
+argon2 = "0.5"
+rand = "0.9.2"
+jsonwebtoken = "9.3"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tracing-appender = "0.2"
+dotenvy = "0.15"
+anyhow = "1.0"
+hyper = { version = "1.8.1", features = ["full"] }
+password-hash = "0.5"
+tower-http = { version = "0.6", features = ["fs"] }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
