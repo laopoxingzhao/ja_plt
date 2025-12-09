@@ -1,6 +1,6 @@
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use jz::utils::jwt::Claims;
 use jz::models::user::User;
+use sqlx::types::chrono::NaiveDateTime;
 
 // JWT 令牌生成测试
 #[tokio::test]
@@ -12,8 +12,13 @@ async fn test_jwt_generation() {
         phone: "1234567890".to_string(),
         password_hash: "hash".to_string(),
         user_type: "customer".to_string(),
-        created_at: None,
-        updated_at: None,
+        avatar_url: None,
+        real_name: None,
+        is_verified: false,
+        balance: 0.0,
+        status: "active".to_string(),
+        created_at: NaiveDateTime::from_timestamp_opt(1609459200, 0).unwrap(),
+        updated_at: NaiveDateTime::from_timestamp_opt(1609459200, 0).unwrap(),
     };
     
     let claims = Claims::new(&user);
@@ -33,8 +38,13 @@ async fn test_jwt_validation() {
         phone: "1234567890".to_string(),
         password_hash: "hash".to_string(),
         user_type: "customer".to_string(),
-        created_at: None,
-        updated_at: None,
+        avatar_url: None,
+        real_name: None,
+        is_verified: false,
+        balance: 0.0,
+        status: "active".to_string(),
+        created_at: NaiveDateTime::from_timestamp_opt(1609459200, 0).unwrap(),
+        updated_at: NaiveDateTime::from_timestamp_opt(1609459200, 0).unwrap(),
     };
     
     let claims = Claims::new(&user);

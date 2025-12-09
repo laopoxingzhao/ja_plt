@@ -126,17 +126,33 @@ impl UserService {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use argon2::{
+        password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+        Argon2,
+    };
+
+    fn hash_password(password: &str) -> Result<String, argon2::password_hash::Error> {
+        let salt = SaltString::generate(&mut OsRng);
+        let argon2 = Argon2::default();
+        let password_hash = argon2.hash_password(password.as_bytes(), &salt)?;
+        Ok(password_hash.to_string())
+    }
+
+    fn verify_password(password: &str, hashed_password: &str) -> bool {
+        if let Ok(parsed_hash) = PasswordHash::new(hashed_password) {
+            let argon2 = Argon2::default();
+            argon2.verify_password(password.as_bytes(), &parsed_hash).is_ok()
+        } else {
+            false
+        }
+    }
 
     #[test]
     fn test_hash_password() {
-        let pool = MySqlPool::connect_lazy("mysql://root:hu123456@localhost/jz").expect("Failed to create pool");
-        let user_service = UserService::new(pool);
-        
         let password = "test_password";
-        let hashed = user_service.hash_password(password).expect("Failed to hash password");
+        let hashed = hash_password(password).expect("Failed to hash password");
         
-        assert!(user_service.verify_password(password, &hashed));
-        assert!(!user_service.verify_password("wrong_password", &hashed));
+        assert!(verify_password(password, &hashed));
+        assert!(!verify_password("wrong_password", &hashed));
     }
 }

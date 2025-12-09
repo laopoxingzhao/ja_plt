@@ -9,41 +9,38 @@ use axum::{
     response::Response,
     routing::get,
 };
+use jz::{log_init, init_db_pool, user_routes, service_routes, order_routes, init_app_state, AppState};
 use std::time::Instant;
 use tower_http::services::ServeDir;
-
-mod config;
-pub mod handler;
-mod utils;
-pub mod models;
-pub mod database;
-pub mod services;
-pub mod repositories;
+// 添加Arc用于共享状态
+use std::sync::Arc;
+// 添加sqlx导入
+use sqlx::mysql::MySqlPool;
 
 /// 应用程序主入口点
 /// #[tokio::main] 宏将异步 main 函数包装为同步代码
 /// 使用 tokio 多线程运行时
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    if dotenvy::from_filename("frontend/.env").is_err() {
-        dotenvy::dotenv().ok();
-    }
+    log_init();
 
-    config::log_init();
+
+    // 初始化应用状态
+    let app_state = init_app_state();
 
     // 初始化数据库连接池
-    let pool = database::init_db_pool().await
+    let pool = init_db_pool(&app_state.database_url).await
         .expect("Failed to initialize database pool");
 
     // let _database_url = env::var("DATABASE_URL")?;
-    let _jwt_secret =
-        env::var("JWT_SECRET").unwrap_or_else(|_| "secret-development-key".to_string());
-
-    // 创建嵌套路由
+    
+    
+    // 创建嵌套路由，并将数据库连接池作为状态传递给这些路由
     let api_routes = Router::new()
-        .nest("/users", handler::user_routes())
-        .nest("/services", handler::service_routes())
-        .nest("/orders", handler::order_routes())
+        .nest("/users", user_routes())
+        .nest("/services", service_routes())
+        .nest("/orders", order_routes())
+        .with_state(pool) // 为API路由提供数据库连接池
         .route_layer(middleware::from_fn(auth_interceptor));
 
     // 静态文件服务
@@ -53,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/", get(|| async { "欢迎使用家政服务API" }))
         .nest("/api", api_routes) // 将所有 API 路由嵌套在 /api 路径下
         .nest_service("/app", serve_dir)
-        .with_state(pool) // 将数据库连接池作为State传递
+        .with_state(Arc::new(app_state)) // 将应用状态作为State传递
         .layer(middleware::from_fn(logging_interceptor))
         .fallback(|| async { "404 Not Found" });
 
