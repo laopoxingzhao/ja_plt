@@ -26,6 +26,9 @@ pub async fn list_users(State(_pool): State<sqlx::mysql::MySqlPool>) -> &'static
 pub async fn get_user(State(_pool): State<sqlx::mysql::MySqlPool>, id: String) -> String {
     // TODO: 实现真实的数据库查询逻辑
     format!("获取单个用户，ID: {}", id)
+    let user_service = UserService::new(pool);
+    user_service.get_user(id).await 
+
 }
 
 /// 登录接口

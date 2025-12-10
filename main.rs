@@ -74,7 +74,7 @@ async fn logging_interceptor(
     let uri = request.uri().clone();
 
     // 前置处理 - preHandle
-    tracing::info!("开始处理请求: {} {}", method, uri);
+    tracing::info!("开始处理请求:logging {} {}", method, uri);
 
     // 执行实际请求处理
     let response = next.run(request).await;
@@ -82,7 +82,7 @@ async fn logging_interceptor(
     // 后置处理 - postHandle
     let duration = start_time.elapsed();
     tracing::info!(
-        "请求完成: {} {} - 状态码: {} - 耗时: {:?}",
+        "请求完成:logging {} {} - 状态码: {} - 耗时: {:?}",
         method,
         uri,
         response.status(),

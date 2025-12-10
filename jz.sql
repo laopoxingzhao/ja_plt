@@ -1,161 +1,161 @@
 -- ============================================================
--- 1. ç”¨æˆ·ç›¸å…³è¡¨
+-- 1. ÓÃ»§Ïà¹Ø±í
 -- ============================================================
 
 CREATE TABLE users (
-    user_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ç”¨æˆ·ID',
-    username VARCHAR(50) UNIQUE NOT NULL COMMENT 'ç”¨æˆ·å',
-    password_hash VARCHAR(255) NOT NULL COMMENT 'å¯†ç å“ˆå¸Œ',
-    email VARCHAR(100) UNIQUE NOT NULL COMMENT 'é‚®ç®±',
-    phone VARCHAR(20) UNIQUE NOT NULL COMMENT 'æ‰‹æœºå·',
-    user_type ENUM('customer', 'worker', 'admin') DEFAULT 'customer' COMMENT 'ç”¨æˆ·ç±»å‹',
-    avatar_url VARCHAR(500) COMMENT 'å¤´åƒURL',
-    real_name VARCHAR(50) COMMENT 'çœŸå®å§“å',
-    is_verified BOOLEAN DEFAULT FALSE COMMENT 'æ˜¯å¦å®åè®¤è¯',
-    balance DECIMAL(10,2) DEFAULT 0.00 COMMENT 'è´¦æˆ·ä½™é¢',
-    status ENUM('active', 'inactive', 'banned') DEFAULT 'active' COMMENT 'è´¦æˆ·çŠ¶æ€',
+    user_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ÓÃ»§ID',
+    username VARCHAR(50) UNIQUE NOT NULL COMMENT 'ÓÃ»§Ãû',
+    password_hash VARCHAR(255) NOT NULL COMMENT 'ÃÜÂë¹şÏ£',
+    email VARCHAR(100) UNIQUE NOT NULL COMMENT 'ÓÊÏä',
+    phone VARCHAR(20) UNIQUE NOT NULL COMMENT 'ÊÖ»úºÅ',
+    user_type ENUM('customer', 'worker', 'admin') DEFAULT 'customer' COMMENT 'ÓÃ»§ÀàĞÍ',
+    avatar_url VARCHAR(500) COMMENT 'Í·ÏñURL',
+    real_name VARCHAR(50) COMMENT 'ÕæÊµĞÕÃû',
+    is_verified BOOLEAN DEFAULT FALSE COMMENT 'ÊÇ·ñÊµÃûÈÏÖ¤',
+    balance DECIMAL(10,2) DEFAULT 0.00 COMMENT 'ÕË»§Óà¶î',
+    status ENUM('active', 'inactive', 'banned') DEFAULT 'active' COMMENT 'ÕË»§×´Ì¬',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_phone_email (phone, email),
     INDEX idx_status (status)
-) COMMENT='ç”¨æˆ·ä¸»è¡¨';
+) COMMENT='ÓÃ»§Ö÷±í';
 
 
 CREATE TABLE user_addresses (
-    address_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'åœ°å€ID',
-    user_id INT NOT NULL COMMENT 'ç”¨æˆ·ID',
-    contact_name VARCHAR(50) NOT NULL COMMENT 'è”ç³»äºº',
-    contact_phone VARCHAR(20) NOT NULL COMMENT 'è”ç³»ç”µè¯',
-    province VARCHAR(50) NOT NULL COMMENT 'çœä»½',
-    city VARCHAR(50) NOT NULL COMMENT 'åŸå¸‚',
-    district VARCHAR(50) NOT NULL COMMENT 'åŒºå¿',
-    street_address VARCHAR(200) NOT NULL COMMENT 'è¯¦ç»†åœ°å€',
-    is_default BOOLEAN DEFAULT FALSE COMMENT 'æ˜¯å¦é»˜è®¤',
+    address_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'µØÖ·ID',
+    user_id INT NOT NULL COMMENT 'ÓÃ»§ID',
+    contact_name VARCHAR(50) NOT NULL COMMENT 'ÁªÏµÈË',
+    contact_phone VARCHAR(20) NOT NULL COMMENT 'ÁªÏµµç»°',
+    province VARCHAR(50) NOT NULL COMMENT 'Ê¡·İ',
+    city VARCHAR(50) NOT NULL COMMENT '³ÇÊĞ',
+    district VARCHAR(50) NOT NULL COMMENT 'ÇøÏØ',
+    street_address VARCHAR(200) NOT NULL COMMENT 'ÏêÏ¸µØÖ·',
+    is_default BOOLEAN DEFAULT FALSE COMMENT 'ÊÇ·ñÄ¬ÈÏ',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX idx_user (user_id),
     INDEX idx_user_default (user_id, is_default)
-) COMMENT='ç”¨æˆ·åœ°å€è¡¨';
+) COMMENT='ÓÃ»§µØÖ·±í';
 
 
 -- ============================================================
--- 2. æœåŠ¡åˆ†ç±»ä¸æœåŠ¡
+-- 2. ·şÎñ·ÖÀàÓë·şÎñ
 -- ============================================================
 
 CREATE TABLE service_categories (
-    category_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'åˆ†ç±»ID',
-    category_name VARCHAR(50) NOT NULL COMMENT 'åˆ†ç±»åç§°',
-    parent_id INT NULL COMMENT 'çˆ¶åˆ†ç±»ID',
-    icon_url VARCHAR(500) COMMENT 'å›¾æ ‡URL',
-    is_active BOOLEAN DEFAULT TRUE COMMENT 'æ˜¯å¦å¯ç”¨',
-    sort_order INT DEFAULT 0 COMMENT 'æ’åº',
+    category_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '·ÖÀàID',
+    category_name VARCHAR(50) NOT NULL COMMENT '·ÖÀàÃû³Æ',
+    parent_id INT NULL COMMENT '¸¸·ÖÀàID',
+    icon_url VARCHAR(500) COMMENT 'Í¼±êURL',
+    is_active BOOLEAN DEFAULT TRUE COMMENT 'ÊÇ·ñÆôÓÃ',
+    sort_order INT DEFAULT 0 COMMENT 'ÅÅĞò',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (parent_id) REFERENCES service_categories(category_id),
     INDEX idx_parent (parent_id)
-) COMMENT='æœåŠ¡åˆ†ç±»è¡¨';
+) COMMENT='·şÎñ·ÖÀà±í';
 
 
 CREATE TABLE services (
-    service_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'æœåŠ¡ID',
-    category_id INT NOT NULL COMMENT 'åˆ†ç±»ID',
-    service_name VARCHAR(100) NOT NULL COMMENT 'æœåŠ¡åç§°',
-    description TEXT COMMENT 'æœåŠ¡æè¿°',
-    base_price DECIMAL(8,2) NOT NULL COMMENT 'åŸºç¡€ä»·æ ¼',
-    unit ENUM('hour', 'square_meter', 'item', 'fixed') NOT NULL COMMENT 'è®¡ä»·å•ä½',
-    min_duration INT DEFAULT 1 COMMENT 'æœ€å°æ—¶é•¿/æ•°é‡',
-    max_duration INT DEFAULT 8 COMMENT 'æœ€å¤§æ—¶é•¿/æ•°é‡',
-    is_active BOOLEAN DEFAULT TRUE COMMENT 'æ˜¯å¦å¯ç”¨',
+    service_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '·şÎñID',
+    category_id INT NOT NULL COMMENT '·ÖÀàID',
+    service_name VARCHAR(100) NOT NULL COMMENT '·şÎñÃû³Æ',
+    description TEXT COMMENT '·şÎñÃèÊö',
+    base_price DECIMAL(8,2) NOT NULL COMMENT '»ù´¡¼Û¸ñ',
+    unit ENUM('hour', 'square_meter', 'item', 'fixed') NOT NULL COMMENT '¼Æ¼Ûµ¥Î»',
+    min_duration INT DEFAULT 1 COMMENT '×îĞ¡Ê±³¤/ÊıÁ¿',
+    max_duration INT DEFAULT 8 COMMENT '×î´óÊ±³¤/ÊıÁ¿',
+    is_active BOOLEAN DEFAULT TRUE COMMENT 'ÊÇ·ñÆôÓÃ',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES service_categories(category_id),
     INDEX idx_category (category_id),
     INDEX idx_active (is_active)
-) COMMENT='æœåŠ¡é¡¹ç›®è¡¨';
+) COMMENT='·şÎñÏîÄ¿±í';
 
 
 CREATE TABLE service_addons (
-    addon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'é™„åŠ é¡¹ID',
-    service_id INT NOT NULL COMMENT 'æœåŠ¡ID',
-    addon_name VARCHAR(100) NOT NULL COMMENT 'é™„åŠ é¡¹åç§°',
-    addon_price DECIMAL(8,2) NOT NULL COMMENT 'é™„åŠ é¡¹ä»·æ ¼',
-    is_active BOOLEAN DEFAULT TRUE COMMENT 'æ˜¯å¦å¯ç”¨',
+    addon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '¸½¼ÓÏîID',
+    service_id INT NOT NULL COMMENT '·şÎñID',
+    addon_name VARCHAR(100) NOT NULL COMMENT '¸½¼ÓÏîÃû³Æ',
+    addon_price DECIMAL(8,2) NOT NULL COMMENT '¸½¼ÓÏî¼Û¸ñ',
+    is_active BOOLEAN DEFAULT TRUE COMMENT 'ÊÇ·ñÆôÓÃ',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (service_id) REFERENCES services(service_id) ON DELETE CASCADE,
     INDEX idx_service (service_id)
-) COMMENT='æœåŠ¡é™„åŠ é¡¹è¡¨';
+) COMMENT='·şÎñ¸½¼ÓÏî±í';
 
 
 -- ============================================================
--- 3. å·¥ä½œè€…ç›¸å…³è¡¨
+-- 3. ¹¤×÷ÕßÏà¹Ø±í
 -- ============================================================
 
 CREATE TABLE worker_profiles (
-    worker_id INT PRIMARY KEY COMMENT 'æœåŠ¡äººå‘˜ID',
-    service_category_id INT NOT NULL COMMENT 'æœåŠ¡åˆ†ç±»ID',
-    hourly_rate DECIMAL(8,2) NOT NULL COMMENT 'æ—¶è–ª',
-    bio TEXT COMMENT 'ä¸ªäººç®€ä»‹',
-    skills JSON COMMENT 'æŠ€èƒ½æ ‡ç­¾',
-    service_area JSON COMMENT 'æœåŠ¡åŒºåŸŸ',
-    total_orders INT DEFAULT 0 COMMENT 'æ€»è®¢å•æ•°',
-    completed_orders INT DEFAULT 0 COMMENT 'å®Œæˆè®¢å•æ•°',
-    avg_rating DECIMAL(3,2) DEFAULT 0.00 COMMENT 'å¹³å‡è¯„åˆ†',
-    is_available BOOLEAN DEFAULT TRUE COMMENT 'æ˜¯å¦å¯æ¥å•',
-    max_daily_orders INT DEFAULT 3 COMMENT 'æ¯æ—¥æœ€å¤§æ¥å•æ•°',
+    worker_id INT PRIMARY KEY COMMENT '·şÎñÈËÔ±ID',
+    service_category_id INT NOT NULL COMMENT '·şÎñ·ÖÀàID',
+    hourly_rate DECIMAL(8,2) NOT NULL COMMENT 'Ê±Ğ½',
+    bio TEXT COMMENT '¸öÈË¼ò½é',
+    skills JSON COMMENT '¼¼ÄÜ±êÇ©',
+    service_area JSON COMMENT '·şÎñÇøÓò',
+    total_orders INT DEFAULT 0 COMMENT '×Ü¶©µ¥Êı',
+    completed_orders INT DEFAULT 0 COMMENT 'Íê³É¶©µ¥Êı',
+    avg_rating DECIMAL(3,2) DEFAULT 0.00 COMMENT 'Æ½¾ùÆÀ·Ö',
+    is_available BOOLEAN DEFAULT TRUE COMMENT 'ÊÇ·ñ¿É½Óµ¥',
+    max_daily_orders INT DEFAULT 3 COMMENT 'Ã¿ÈÕ×î´ó½Óµ¥Êı',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (service_category_id) REFERENCES service_categories(category_id),
     INDEX idx_category_rating (service_category_id, avg_rating DESC),
     INDEX idx_available (is_available)
-) COMMENT='æœåŠ¡äººå‘˜è¯¦æƒ…è¡¨';
+) COMMENT='·şÎñÈËÔ±ÏêÇé±í';
 
 
 -- ============================================================
--- 4. ä¼˜æƒ åˆ¸åŸºç¡€è¡¨
+-- 4. ÓÅ»İÈ¯»ù´¡±í
 -- ============================================================
 
 CREATE TABLE coupons (
-    coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ä¼˜æƒ åˆ¸ID',
-    coupon_code VARCHAR(20) UNIQUE NOT NULL COMMENT 'ä¼˜æƒ åˆ¸ç ',
-    coupon_name VARCHAR(100) NOT NULL COMMENT 'ä¼˜æƒ åˆ¸åç§°',
-    discount_type ENUM('percentage', 'fixed', 'service') NOT NULL COMMENT 'æŠ˜æ‰£ç±»å‹',
-    discount_value DECIMAL(10,2) NOT NULL COMMENT 'æŠ˜æ‰£å€¼',
-    min_order_amount DECIMAL(10,2) DEFAULT 0.00 COMMENT 'æœ€ä½è®¢å•é‡‘é¢',
-    applicable_services JSON COMMENT 'é€‚ç”¨æœåŠ¡',
-    valid_from DATE NOT NULL COMMENT 'æœ‰æ•ˆæœŸå¼€å§‹',
-    valid_until DATE NOT NULL COMMENT 'æœ‰æ•ˆæœŸæˆªæ­¢',
-    usage_limit INT DEFAULT 1 COMMENT 'ä½¿ç”¨æ¬¡æ•°é™åˆ¶',
-    used_count INT DEFAULT 0 COMMENT 'å·²ä½¿ç”¨æ¬¡æ•°',
-    is_active BOOLEAN DEFAULT TRUE COMMENT 'æ˜¯å¦å¯ç”¨',
+    coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ÓÅ»İÈ¯ID',
+    coupon_code VARCHAR(20) UNIQUE NOT NULL COMMENT 'ÓÅ»İÈ¯Âë',
+    coupon_name VARCHAR(100) NOT NULL COMMENT 'ÓÅ»İÈ¯Ãû³Æ',
+    discount_type ENUM('percentage', 'fixed', 'service') NOT NULL COMMENT 'ÕÛ¿ÛÀàĞÍ',
+    discount_value DECIMAL(10,2) NOT NULL COMMENT 'ÕÛ¿ÛÖµ',
+    min_order_amount DECIMAL(10,2) DEFAULT 0.00 COMMENT '×îµÍ¶©µ¥½ğ¶î',
+    applicable_services JSON COMMENT 'ÊÊÓÃ·şÎñ',
+    valid_from DATE NOT NULL COMMENT 'ÓĞĞ§ÆÚ¿ªÊ¼',
+    valid_until DATE NOT NULL COMMENT 'ÓĞĞ§ÆÚ½ØÖ¹',
+    usage_limit INT DEFAULT 1 COMMENT 'Ê¹ÓÃ´ÎÊıÏŞÖÆ',
+    used_count INT DEFAULT 0 COMMENT 'ÒÑÊ¹ÓÃ´ÎÊı',
+    is_active BOOLEAN DEFAULT TRUE COMMENT 'ÊÇ·ñÆôÓÃ',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_code_validity (coupon_code, valid_until, is_active)
-) COMMENT='ä¼˜æƒ åˆ¸è¡¨';
+) COMMENT='ÓÅ»İÈ¯±í';
 
 
 -- ============================================================
--- 5. è®¢å•ä¸»è¡¨ï¼ˆä¾èµ–å¤šè¡¨ï¼‰
+-- 5. ¶©µ¥Ö÷±í£¨ÒÀÀµ¶à±í£©
 -- ============================================================
 
 CREATE TABLE orders (
-    order_id VARCHAR(20) PRIMARY KEY COMMENT 'è®¢å•å·',
-    customer_id INT NOT NULL COMMENT 'å®¢æˆ·ID',
-    worker_id INT NULL COMMENT 'æœåŠ¡äººå‘˜ID',
-    address_id INT NOT NULL COMMENT 'åœ°å€ID',
-    service_id INT NOT NULL COMMENT 'æœåŠ¡ID',
-    coupon_id INT NULL COMMENT 'ä¼˜æƒ åˆ¸ID',
-    service_date DATE NOT NULL COMMENT 'æœåŠ¡æ—¥æœŸ',
-    time_slot ENUM('morning', 'afternoon', 'evening', 'full_day') NOT NULL COMMENT 'æœåŠ¡æ—¶æ®µ',
-    duration DECIMAL(5,1) NOT NULL COMMENT 'æœåŠ¡æ—¶é•¿',
-    unit_price DECIMAL(8,2) NOT NULL COMMENT 'å•ä»·',
-    subtotal DECIMAL(10,2) NOT NULL COMMENT 'å°è®¡é‡‘é¢',
-    discount_amount DECIMAL(8,2) DEFAULT 0.00 COMMENT 'ä¼˜æƒ é‡‘é¢',
-    total_amount DECIMAL(10,2) NOT NULL COMMENT 'æ€»é‡‘é¢',
-    payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending' COMMENT 'æ”¯ä»˜çŠ¶æ€',
-    order_status ENUM('pending', 'confirmed', 'assigned', 'ongoing', 'completed', 'cancelled') DEFAULT 'pending' COMMENT 'è®¢å•çŠ¶æ€',
-    special_instructions TEXT COMMENT 'ç‰¹æ®Šè¦æ±‚',
-    cancellation_reason TEXT COMMENT 'å–æ¶ˆåŸå› ',
-    scheduled_start_time DATETIME NULL COMMENT 'è®¡åˆ’å¼€å§‹æ—¶é—´',
-    actual_start_time DATETIME NULL COMMENT 'å®é™…å¼€å§‹æ—¶é—´',
-    actual_end_time DATETIME NULL COMMENT 'å®é™…ç»“æŸæ—¶é—´',
+    order_id VARCHAR(20) PRIMARY KEY COMMENT '¶©µ¥ºÅ',
+    customer_id INT NOT NULL COMMENT '¿Í»§ID',
+    worker_id INT NULL COMMENT '·şÎñÈËÔ±ID',
+    address_id INT NOT NULL COMMENT 'µØÖ·ID',
+    service_id INT NOT NULL COMMENT '·şÎñID',
+    coupon_id INT NULL COMMENT 'ÓÅ»İÈ¯ID',
+    service_date DATE NOT NULL COMMENT '·şÎñÈÕÆÚ',
+    time_slot ENUM('morning', 'afternoon', 'evening', 'full_day') NOT NULL COMMENT '·şÎñÊ±¶Î',
+    duration DECIMAL(5,1) NOT NULL COMMENT '·şÎñÊ±³¤',
+    unit_price DECIMAL(8,2) NOT NULL COMMENT 'µ¥¼Û',
+    subtotal DECIMAL(10,2) NOT NULL COMMENT 'Ğ¡¼Æ½ğ¶î',
+    discount_amount DECIMAL(8,2) DEFAULT 0.00 COMMENT 'ÓÅ»İ½ğ¶î',
+    total_amount DECIMAL(10,2) NOT NULL COMMENT '×Ü½ğ¶î',
+    payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending' COMMENT 'Ö§¸¶×´Ì¬',
+    order_status ENUM('pending', 'confirmed', 'assigned', 'ongoing', 'completed', 'cancelled') DEFAULT 'pending' COMMENT '¶©µ¥×´Ì¬',
+    special_instructions TEXT COMMENT 'ÌØÊâÒªÇó',
+    cancellation_reason TEXT COMMENT 'È¡ÏûÔ­Òò',
+    scheduled_start_time DATETIME NULL COMMENT '¼Æ»®¿ªÊ¼Ê±¼ä',
+    actual_start_time DATETIME NULL COMMENT 'Êµ¼Ê¿ªÊ¼Ê±¼ä',
+    actual_end_time DATETIME NULL COMMENT 'Êµ¼Ê½áÊøÊ±¼ä',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES users(user_id),
@@ -166,151 +166,151 @@ CREATE TABLE orders (
     INDEX idx_customer_status (customer_id, order_status),
     INDEX idx_worker_status (worker_id, order_status),
     INDEX idx_date_status (service_date, order_status)
-) COMMENT='è®¢å•ä¸»è¡¨';
+) COMMENT='¶©µ¥Ö÷±í';
 
 
 -- ============================================================
--- 6. è®¢å•é™„åŠ é¡¹
+-- 6. ¶©µ¥¸½¼ÓÏî
 -- ============================================================
 
 CREATE TABLE order_addons (
-    order_addon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'è®¢å•é™„åŠ é¡¹ID',
-    order_id VARCHAR(20) NOT NULL COMMENT 'è®¢å•ID',
-    addon_id INT NOT NULL COMMENT 'é™„åŠ é¡¹ID',
-    quantity INT DEFAULT 1 COMMENT 'æ•°é‡',
-    unit_price DECIMAL(8,2) NOT NULL COMMENT 'å•ä»·',
+    order_addon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '¶©µ¥¸½¼ÓÏîID',
+    order_id VARCHAR(20) NOT NULL COMMENT '¶©µ¥ID',
+    addon_id INT NOT NULL COMMENT '¸½¼ÓÏîID',
+    quantity INT DEFAULT 1 COMMENT 'ÊıÁ¿',
+    unit_price DECIMAL(8,2) NOT NULL COMMENT 'µ¥¼Û',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
     FOREIGN KEY (addon_id) REFERENCES service_addons(addon_id),
     INDEX idx_order (order_id)
-) COMMENT='è®¢å•é™„åŠ é¡¹è¡¨';
+) COMMENT='¶©µ¥¸½¼ÓÏî±í';
 
 
 -- ============================================================
--- 7. å·¥ä½œè€…æ—¥ç¨‹ï¼ˆéœ€è¦ ordersï¼‰
+-- 7. ¹¤×÷ÕßÈÕ³Ì£¨ĞèÒª orders£©
 -- ============================================================
 
 CREATE TABLE worker_schedules (
-    schedule_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'æ—¥ç¨‹ID',
-    worker_id INT NOT NULL COMMENT 'æœåŠ¡äººå‘˜ID',
-    schedule_date DATE NOT NULL COMMENT 'æ’ç­æ—¥æœŸ',
-    time_slot ENUM('morning', 'afternoon', 'evening', 'full_day') NOT NULL COMMENT 'æ—¶é—´æ®µ',
-    status ENUM('available', 'booked', 'unavailable') DEFAULT 'available' COMMENT 'çŠ¶æ€',
-    order_id VARCHAR(20) NULL COMMENT 'å…³è”è®¢å•ID',
+    schedule_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ÈÕ³ÌID',
+    worker_id INT NOT NULL COMMENT '·şÎñÈËÔ±ID',
+    schedule_date DATE NOT NULL COMMENT 'ÅÅ°àÈÕÆÚ',
+    time_slot ENUM('morning', 'afternoon', 'evening', 'full_day') NOT NULL COMMENT 'Ê±¼ä¶Î',
+    status ENUM('available', 'booked', 'unavailable') DEFAULT 'available' COMMENT '×´Ì¬',
+    order_id VARCHAR(20) NULL COMMENT '¹ØÁª¶©µ¥ID',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     UNIQUE KEY uk_worker_time (worker_id, schedule_date, time_slot),
     INDEX idx_worker_date (worker_id, schedule_date)
-) COMMENT='æœåŠ¡äººå‘˜æ—¥ç¨‹è¡¨';
+) COMMENT='·şÎñÈËÔ±ÈÕ³Ì±í';
 
 
 -- ============================================================
--- 8. ç”¨æˆ·ä¼˜æƒ åˆ¸
+-- 8. ÓÃ»§ÓÅ»İÈ¯
 -- ============================================================
 
 CREATE TABLE user_coupons (
-    user_coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ç”¨æˆ·ä¼˜æƒ åˆ¸ID',
-    user_id INT NOT NULL COMMENT 'ç”¨æˆ·ID',
-    coupon_id INT NOT NULL COMMENT 'ä¼˜æƒ åˆ¸ID',
-    order_id VARCHAR(20) NULL COMMENT 'è®¢å•ID',
-    is_used BOOLEAN DEFAULT FALSE COMMENT 'æ˜¯å¦å·²ä½¿ç”¨',
-    used_at DATETIME NULL COMMENT 'ä½¿ç”¨æ—¶é—´',
-    expires_at DATE NOT NULL COMMENT 'è¿‡æœŸæ—¶é—´',
+    user_coupon_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ÓÃ»§ÓÅ»İÈ¯ID',
+    user_id INT NOT NULL COMMENT 'ÓÃ»§ID',
+    coupon_id INT NOT NULL COMMENT 'ÓÅ»İÈ¯ID',
+    order_id VARCHAR(20) NULL COMMENT '¶©µ¥ID',
+    is_used BOOLEAN DEFAULT FALSE COMMENT 'ÊÇ·ñÒÑÊ¹ÓÃ',
+    used_at DATETIME NULL COMMENT 'Ê¹ÓÃÊ±¼ä',
+    expires_at DATE NOT NULL COMMENT '¹ıÆÚÊ±¼ä',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id),
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     UNIQUE KEY uk_user_coupon_order (user_id, coupon_id, order_id),
     INDEX idx_user_unused (user_id, is_used, expires_at)
-) COMMENT='ç”¨æˆ·ä¼˜æƒ åˆ¸è¡¨';
+) COMMENT='ÓÃ»§ÓÅ»İÈ¯±í';
 
 
 -- ============================================================
--- 9. è¯„ä»·ä¸æŠ•è¯‰
+-- 9. ÆÀ¼ÛÓëÍ¶Ëß
 -- ============================================================
 
 CREATE TABLE reviews (
-    review_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'è¯„ä»·ID',
-    order_id VARCHAR(20) UNIQUE NOT NULL COMMENT 'è®¢å•ID',
-    customer_id INT NOT NULL COMMENT 'å®¢æˆ·ID',
-    worker_id INT NOT NULL COMMENT 'æœåŠ¡äººå‘˜ID',
-    rating TINYINT NOT NULL COMMENT 'è¯„åˆ†(1-5)',
-    service_rating TINYINT COMMENT 'æœåŠ¡è¯„åˆ†',
-    punctuality_rating TINYINT COMMENT 'å®ˆæ—¶è¯„åˆ†',
-    review_text TEXT COMMENT 'è¯„ä»·å†…å®¹',
-    is_anonymous BOOLEAN DEFAULT FALSE COMMENT 'æ˜¯å¦åŒ¿å',
+    review_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ÆÀ¼ÛID',
+    order_id VARCHAR(20) UNIQUE NOT NULL COMMENT '¶©µ¥ID',
+    customer_id INT NOT NULL COMMENT '¿Í»§ID',
+    worker_id INT NOT NULL COMMENT '·şÎñÈËÔ±ID',
+    rating TINYINT NOT NULL COMMENT 'ÆÀ·Ö(1-5)',
+    service_rating TINYINT COMMENT '·şÎñÆÀ·Ö',
+    punctuality_rating TINYINT COMMENT 'ÊØÊ±ÆÀ·Ö',
+    review_text TEXT COMMENT 'ÆÀ¼ÛÄÚÈİ',
+    is_anonymous BOOLEAN DEFAULT FALSE COMMENT 'ÊÇ·ñÄäÃû',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (customer_id) REFERENCES users(user_id),
     FOREIGN KEY (worker_id) REFERENCES users(user_id),
     INDEX idx_worker_rating (worker_id, rating DESC),
     INDEX idx_order (order_id)
-) COMMENT='è¯„ä»·è¡¨';
+) COMMENT='ÆÀ¼Û±í';
 
 
 CREATE TABLE complaints (
-    complaint_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'æŠ•è¯‰ID',
-    order_id VARCHAR(20) NOT NULL COMMENT 'è®¢å•ID',
-    complainant_id INT NOT NULL COMMENT 'æŠ•è¯‰äººID',
-    target_id INT NOT NULL COMMENT 'è¢«æŠ•è¯‰äººID',
-    complaint_type ENUM('service', 'punctuality', 'attitude', 'other') NOT NULL COMMENT 'æŠ•è¯‰ç±»å‹',
-    complaint_text TEXT NOT NULL COMMENT 'æŠ•è¯‰å†…å®¹',
-    status ENUM('pending', 'investigating', 'resolved', 'rejected') DEFAULT 'pending' COMMENT 'å¤„ç†çŠ¶æ€',
-    resolved_at DATETIME NULL COMMENT 'å¤„ç†æ—¶é—´',
+    complaint_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Í¶ËßID',
+    order_id VARCHAR(20) NOT NULL COMMENT '¶©µ¥ID',
+    complainant_id INT NOT NULL COMMENT 'Í¶ËßÈËID',
+    target_id INT NOT NULL COMMENT '±»Í¶ËßÈËID',
+    complaint_type ENUM('service', 'punctuality', 'attitude', 'other') NOT NULL COMMENT 'Í¶ËßÀàĞÍ',
+    complaint_text TEXT NOT NULL COMMENT 'Í¶ËßÄÚÈİ',
+    status ENUM('pending', 'investigating', 'resolved', 'rejected') DEFAULT 'pending' COMMENT '´¦Àí×´Ì¬',
+    resolved_at DATETIME NULL COMMENT '´¦ÀíÊ±¼ä',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (complainant_id) REFERENCES users(user_id),
     FOREIGN KEY (target_id) REFERENCES users(user_id),
     INDEX idx_status (status),
     INDEX idx_complainant (complainant_id)
-) COMMENT='æŠ•è¯‰è¡¨';
+) COMMENT='Í¶Ëß±í';
 
 
 -- ============================================================
--- 10. æ”¯ä»˜è¡¨
+-- 10. Ö§¸¶±í
 -- ============================================================
 
 CREATE TABLE payments (
-    payment_id VARCHAR(30) PRIMARY KEY COMMENT 'æ”¯ä»˜ID',
-    order_id VARCHAR(20) NOT NULL COMMENT 'è®¢å•ID',
-    user_id INT NOT NULL COMMENT 'ç”¨æˆ·ID',
-    payment_method ENUM('wechat', 'alipay', 'balance', 'card') NOT NULL COMMENT 'æ”¯ä»˜æ–¹å¼',
-    payment_amount DECIMAL(10,2) NOT NULL COMMENT 'æ”¯ä»˜é‡‘é¢',
-    payment_status ENUM('pending', 'processing', 'success', 'failed') DEFAULT 'pending' COMMENT 'æ”¯ä»˜çŠ¶æ€',
-    thirdparty_trade_no VARCHAR(100) COMMENT 'ç¬¬ä¸‰æ–¹äº¤æ˜“å·',
-    payment_time DATETIME NULL COMMENT 'æ”¯ä»˜æ—¶é—´',
+    payment_id VARCHAR(30) PRIMARY KEY COMMENT 'Ö§¸¶ID',
+    order_id VARCHAR(20) NOT NULL COMMENT '¶©µ¥ID',
+    user_id INT NOT NULL COMMENT 'ÓÃ»§ID',
+    payment_method ENUM('wechat', 'alipay', 'balance', 'card') NOT NULL COMMENT 'Ö§¸¶·½Ê½',
+    payment_amount DECIMAL(10,2) NOT NULL COMMENT 'Ö§¸¶½ğ¶î',
+    payment_status ENUM('pending', 'processing', 'success', 'failed') DEFAULT 'pending' COMMENT 'Ö§¸¶×´Ì¬',
+    thirdparty_trade_no VARCHAR(100) COMMENT 'µÚÈı·½½»Ò×ºÅ',
+    payment_time DATETIME NULL COMMENT 'Ö§¸¶Ê±¼ä',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     INDEX idx_order_status (order_id, payment_status),
     INDEX idx_user_time (user_id, payment_time DESC)
-) COMMENT='æ”¯ä»˜è®°å½•è¡¨';
+) COMMENT='Ö§¸¶¼ÇÂ¼±í';
 
 
 -- ============================================================
--- 11. ç³»ç»Ÿé…ç½®ä¸é€šçŸ¥
+-- 11. ÏµÍ³ÅäÖÃÓëÍ¨Öª
 -- ============================================================
 
 CREATE TABLE system_settings (
-    setting_key VARCHAR(50) PRIMARY KEY COMMENT 'é…ç½®é”®',
-    setting_value TEXT COMMENT 'é…ç½®å€¼',
-    category VARCHAR(50) COMMENT 'åˆ†ç±»',
-    description TEXT COMMENT 'æè¿°',
+    setting_key VARCHAR(50) PRIMARY KEY COMMENT 'ÅäÖÃ¼ü',
+    setting_value TEXT COMMENT 'ÅäÖÃÖµ',
+    category VARCHAR(50) COMMENT '·ÖÀà',
+    description TEXT COMMENT 'ÃèÊö',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) COMMENT='ç³»ç»Ÿé…ç½®è¡¨';
+) COMMENT='ÏµÍ³ÅäÖÃ±í';
 
 
 CREATE TABLE notifications (
-    notification_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'æ¶ˆæ¯ID',
-    user_id INT NOT NULL COMMENT 'ç”¨æˆ·ID',
-    notification_type ENUM('order', 'system', 'promotion') NOT NULL COMMENT 'æ¶ˆæ¯ç±»å‹',
-    title VARCHAR(200) NOT NULL COMMENT 'æ ‡é¢˜',
-    content TEXT NOT NULL COMMENT 'å†…å®¹',
-    related_id VARCHAR(50) COMMENT 'å…³è”ä¸šåŠ¡ID',
-    is_read BOOLEAN DEFAULT FALSE COMMENT 'æ˜¯å¦å·²è¯»',
+    notification_id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'ÏûÏ¢ID',
+    user_id INT NOT NULL COMMENT 'ÓÃ»§ID',
+    notification_type ENUM('order', 'system', 'promotion') NOT NULL COMMENT 'ÏûÏ¢ÀàĞÍ',
+    title VARCHAR(200) NOT NULL COMMENT '±êÌâ',
+    content TEXT NOT NULL COMMENT 'ÄÚÈİ',
+    related_id VARCHAR(50) COMMENT '¹ØÁªÒµÎñID',
+    is_read BOOLEAN DEFAULT FALSE COMMENT 'ÊÇ·ñÒÑ¶Á',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     INDEX idx_user_unread (user_id, is_read),
     INDEX idx_created (created_at DESC)
-) COMMENT='æ¶ˆæ¯é€šçŸ¥è¡¨';
+) COMMENT='ÏûÏ¢Í¨Öª±í';
