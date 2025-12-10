@@ -32,7 +32,6 @@
           v-model="loginForm.password"
         />
         <button class="auth-button" @click="handleLogin">登录</button>
-        <button class="logout-button" @click="handleLogout">登出</button>
       </view>
 
       <!-- 注册表单 -->
@@ -61,6 +60,11 @@
         <button class="auth-button" @click="handleRegister">注册</button>
       </view>
     </view>
+    
+    <!-- 登出按钮应该在用户已登录的情况下显示 -->
+    <view v-if="isLoggedIn" class="logout-section">
+      <button class="logout-button" @click="handleLogout">登出</button>
+    </view>
   </view>
 </template>
 
@@ -72,6 +76,7 @@ export default {
   data() {
     return {
       activeTab: 'login',
+      isLoggedIn: false,
       loginForm: {
         identifier: '',
         password: ''
@@ -84,9 +89,14 @@ export default {
       }
     }
   },
+  mounted() {
+    // 检查用户是否已登录
+    const token = uni.getStorageSync('token')
+    this.isLoggedIn = !!token
+  },
   methods: {
     switchTab(tab) {
-      this.activeTab = tab;
+      this.activeTab = tab
     },
     
     async handleLogin() {
@@ -102,6 +112,7 @@ export default {
         const res = await userApi.login(this.loginForm);
         uni.setStorageSync('token', res.token);
         uni.setStorageSync('user', JSON.stringify(res.user));
+        this.isLoggedIn = true
         
         uni.showToast({
           title: '登录成功',
@@ -175,6 +186,7 @@ export default {
         // 清除本地存储的token和用户信息
         uni.removeStorageSync('token');
         uni.removeStorageSync('user');
+        this.isLoggedIn = false
         
         uni.showToast({
           title: '登出成功',
@@ -196,55 +208,56 @@ export default {
 
 <style scoped>
 .auth-container {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  width: 100%;
-  max-width: 400px;
+  padding: 40rpx;
+  background-color: #fff;
 }
 
 .auth-tabs {
   display: flex;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2rpx solid #eee;
+  margin-bottom: 40rpx;
 }
 
 .tab {
   flex: 1;
   text-align: center;
-  padding: 20px;
-  cursor: pointer;
-  font-weight: 600;
+  padding: 20rpx;
+  font-size: 32rpx;
   color: #666;
-  transition: all 0.3s ease;
 }
 
 .tab.active {
   color: #00bfff;
-  border-bottom: 3px solid #00bfff;
-}
-
-.auth-form {
-  padding: 30px;
+  border-bottom: 4rpx solid #00bfff;
 }
 
 .input-field {
   width: 100%;
-  padding: 15px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-sizing: border-box;
+  height: 80rpx;
+  border: 2rpx solid #eee;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  margin-bottom: 20rpx;
+  font-size: 28rpx;
 }
 
 .auth-button {
   width: 100%;
-  padding: 15px;
+  height: 80rpx;
   background-color: #00bfff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
+  color: #fff;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
+}
+
+.logout-button {
+  width: 100%;
+  height: 80rpx;
+  background-color: #ff4d4f;
+  color: #fff;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
 }
 </style>

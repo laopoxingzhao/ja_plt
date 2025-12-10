@@ -1,5 +1,5 @@
 // mock/user.js
-const Mock = require('mockjs')
+import Mock from 'mockjs'
 
 // 模拟用户数据
 const users = []
@@ -21,7 +21,7 @@ for (let i = 0; i < 20; i++) {
 }
 
 // 登录接口
-Mock.mock('/users/login', 'post', (options) => {
+Mock.mock('/api/users/login', 'post', (options) => {
   const { identifier, password } = JSON.parse(options.body)
   
   // 模拟登录验证
@@ -56,7 +56,7 @@ Mock.mock('/users/login', 'post', (options) => {
 })
 
 // 注册接口
-Mock.mock('/users/register', 'post', (options) => {
+Mock.mock('/api/users/register', 'post', (options) => {
   const { username, email, phone, password } = JSON.parse(options.body)
   
   // 检查是否已存在
@@ -99,6 +99,8 @@ Mock.mock('/users/register', 'post', (options) => {
     }
   }
 })
+
+export default Mock
 
 // 获取用户列表
 Mock.mock('/users', 'get', () => {

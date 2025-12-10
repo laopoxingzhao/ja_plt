@@ -1,16 +1,18 @@
 // mock/index.js
-const Mock = require('mockjs')
+import Mock from 'mockjs'
+
+// mock目录已废弃，使用api.js中的简单mock实现
 
 // 判断是否开启mock
-const enableMock = process.env.NODE_ENV === 'development'
+const enableMock = process.env.NODE_ENV === 'development' && process.env.VUE_APP_MOCK === 'true'
 
 if (enableMock) {
   // 加载所有mock规则
-  require('./user')
-  require('./service')
-  require('./order')
+  import('./user.js')
+  import('./service.js')
+  import('./order.js')
   
   console.log('Mock initialized successfully')
 }
 
-module.exports = Mock
+export default Mock

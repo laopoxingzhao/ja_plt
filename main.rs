@@ -16,6 +16,8 @@ use tower_http::services::ServeDir;
 use std::sync::Arc;
 // 添加sqlx导入
 use sqlx::mysql::MySqlPool;
+// 添加cors支持
+use tower_http::cors::{CorsLayer, Any};
 
 /// 应用程序主入口点
 /// #[tokio::main] 宏将异步 main 函数包装为同步代码
@@ -49,15 +51,24 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(|| async { "欢迎使用家政服务API" }))
         .nest("/api", api_routes) // 将所有 API 路由嵌套在 /api 路径下
-        .nest_service("/app", serve_dir)
-        .with_state(Arc::new(app_state)) // 将应用状态作为State传递
-        .layer(middleware::from_fn(logging_interceptor))
-        .fallback(|| async { "404 Not Found" });
+        // 添加CORS支持
+        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any))
+        .fallback_service(serve_dir)
+        .with_state(Arc::new(app_state));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::info!("家政服务API服务器启动于 http://{}", addr);
-    let listener = tokio::net::TcpListener::bind(&addr).await?;
-    axum::serve(listener, app).await?;
+    // 从环境变量读取主机和端口，默认为 0.0.0.0:8000
+    let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let port = env::var("PORT").unwrap_or_else(|_| "8000".to_string());
+    let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
+
+    println!("🚀 正在家政服务API服务器 {}", addr);
+    println!("📖 文档地址: http://{}:{}/docs", host, port);
+    println!("📁 静态文件服务: http://{}:{}/assets/", host, port);
+
+    // 绑定到地址并启动服务器
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await?;
 
     Ok(())
 }

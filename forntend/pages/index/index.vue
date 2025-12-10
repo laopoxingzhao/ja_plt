@@ -98,17 +98,6 @@
 						icon: 'none'
 					});
 					
-					// 使用默认分类数据
-					this.serviceCategories = [
-						{ id: 1, name: '保洁清洗', icon: '/static/clean.png' },
-						{ id: 2, name: '搬家服务', icon: '/static/move.png' },
-						{ id: 3, name: '维修安装', icon: '/static/repair.png' },
-						{ id: 4, name: '保姆月嫂', icon: '/static/nanny.png' },
-						{ id: 5, name: '管道疏通', icon: '/static/plumbing.png' },
-						{ id: 6, name: '家电清洗', icon: '/static/appliance.png' },
-						{ id: 7, name: '家具保养', icon: '/static/furniture.png' },
-						{ id: 8, name: '全部服务', icon: '/static/all.png' }
-					];
 				}
 			},
 			
@@ -126,12 +115,6 @@
 						icon: 'none'
 					});
 					
-					// 虚拟数据
-					this.recommendedServices = [
-						{ service_id: 1, service_name: '专业保洁服务', description: '专业保洁服务', base_price: 50, image: '/static/service-1.jpg' },
-						{ service_id: 2, service_name: '搬家服务', description: '搬家服务', base_price: 80, image: '/static/service-2.jpg' },
-						{ service_id: 3, service_name: '维修安装', base_price: 120, image: '/static/service-3.jpg' }
-					];
 				}
 			},
 			

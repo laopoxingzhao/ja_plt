@@ -5,10 +5,6 @@ import Vue from 'vue'
 import './uni.promisify.adaptor'
 import store from './store'
 
-// 在开发环境下初始化MockJS
-if (process.env.NODE_ENV === 'development') {
-  require('./mock')
-}
 
 Vue.config.productionTip = false
 
@@ -31,9 +27,9 @@ Vue.prototype.$utils = {
     return /^1[3-9]\d{9}$/.test(phone)
   },
   
-  // 格式化价格
+  // 格式化金额
   formatPrice(price) {
-    return parseFloat(price).toFixed(2)
+    return `¥${parseFloat(price).toFixed(2)}`
   }
 }
 
@@ -47,11 +43,6 @@ app.$mount()
 // #ifdef VUE3
 import { createSSRApp } from 'vue'
 export function createApp() {
-  // 在开发环境下初始化MockJS
-  if (process.env.NODE_ENV === 'development') {
-    require('./mock')
-  }
-  
   const app = createSSRApp(App)
   return {
     app
