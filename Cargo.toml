@@ -30,7 +30,3 @@ tower-http = { version = "0.6", features = ["cors", "fs"] }
 tower = "0.5"
 http-body-util = "0.1"
 
-# 指定二进制文件入口
-[[bin]]
-name = "jz"
-path = "main.rs"

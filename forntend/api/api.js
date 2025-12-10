@@ -3,14 +3,14 @@
 const mockData = {
   // 服务分类Mock数据
   '/services/categories': [
-    { id: 1, name: '保洁清洗', icon: '/static/clean.png' },
-    { id: 2, name: '搬家服务', icon: '/static/move.png' },
-    { id: 3, name: '维修安装', icon: '/static/repair.png' },
-    { id: 4, name: '保姆月嫂', icon: '/static/nanny.png' },
-    { id: 5, name: '管道疏通', icon: '/static/plumbing.png' },
-    { id: 6, name: '家电清洗', icon: '/static/appliance.png' },
-    { id: 7, name: '家具保养', icon: '/static/furniture.png' },
-    { id: 8, name: '全部服务', icon: '/static/all.png' }
+    { id: 1, name: '保洁清洗', icon: '/static/icons/clean.svg' },
+    { id: 2, name: '搬家服务', icon: '/static/icons/move.svg' },
+    { id: 3, name: '维修安装', icon: '/static/icons/repair.svg' },
+    { id: 4, name: '保姆月嫂', icon: '/static/icons/nanny.svg' },
+    { id: 5, name: '管道疏通', icon: '/static/icons/plumber.svg' },
+    { id: 6, name: '家电清洗', icon: '/static/icons/appliance.svg' },
+    { id: 7, name: '家具保养', icon: '/static/icons/furniture.svg' },
+    { id: 8, name: '全部服务', icon: '/static/icons/all.svg' }
   ],
   
   // 服务列表Mock数据
@@ -48,7 +48,7 @@ const mockData = {
 }
 
 // 判断是否启用Mock
-const enableMock = process.env.NODE_ENV === 'development' && process.env.VUE_APP_MOCK === 'true'
+const enableMock = process.env.NODE_ENV === 'development'
 
 // API基础URL
 const BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8000'
@@ -65,7 +65,7 @@ function request(url, options = {}) {
           msg: 'success',
           data: mockData[url]
         })
-      }, 300)
+      }, 100)
     })
   }
   
@@ -230,18 +230,22 @@ export const userApi = {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            user_id: 1,
-            username: 'mockuser',
-            email: 'user@example.com',
-            phone: '13800138000',
-            user_type: 'customer',
-            avatar_url: '/static/avatar.jpg',
-            real_name: '张三',
-            is_verified: true,
-            balance: 1000.00,
-            status: 'active',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            code: 200,
+            msg: 'success',
+            data: {
+              user_id: 1,
+              username: 'mockuser',
+              email: 'user@example.com',
+              phone: '13800138000',
+              user_type: 'customer',
+              avatar_url: '/static/avatar.jpg',
+              real_name: '张三',
+              is_verified: true,
+              balance: 1000.00,
+              status: 'active',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
           })
         }, 500)
       })
@@ -256,12 +260,16 @@ export const userApi = {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            ...data,
-            user_id: 1,
-            username: 'mockuser',
-            email: data.email || 'user@example.com',
-            phone: data.phone || '13800138000',
-            updated_at: new Date().toISOString()
+            code: 200,
+            msg: 'success',
+            data: {
+              ...data,
+              user_id: 1,
+              username: 'mockuser',
+              email: data.email || 'user@example.com',
+              phone: data.phone || '13800138000',
+              updated_at: new Date().toISOString()
+            }
           })
         }, 500)
       })
@@ -278,14 +286,23 @@ export const userApi = {
 export const serviceApi = {
   // 获取服务分类
   async getCategories() {
-    return request('/services/categories')
+    const response = await request('/services/categories');
+    // 如果是mock数据，response.data就是分类数组
+    // 如果是真实API，response.data也是一个包含categories的对象
+    return response.data || response;
   },
   
   // 获取服务列表
   async getServices(params = {}) {
     // Mock处理分页参数
     if (enableMock) {
-      const services = mockData['/services'] || []
+      let services = mockData['/services'] || []
+      
+      // 如果有分类ID参数，则进行筛选
+      if (params.category_id) {
+        services = services.filter(s => s.category_id == params.category_id)
+      }
+      
       const page = parseInt(params.page) || 1
       const pageSize = parseInt(params.page_size) || 10
       const start = (page - 1) * pageSize
@@ -319,7 +336,11 @@ export const serviceApi = {
       const services = mockData['/services'] || []
       const service = services.find(s => s.service_id == id)
       if (service) {
-        return Promise.resolve(service)
+        return Promise.resolve({
+          code: 200,
+          msg: 'success',
+          data: service
+        })
       } else {
         return Promise.reject(new Error('服务不存在'))
       }
@@ -369,7 +390,11 @@ export const orderApi = {
       const orders = mockData['/orders'] || []
       const order = orders.find(o => o.order_id == id)
       if (order) {
-        return Promise.resolve(order)
+        return Promise.resolve({
+          code: 200,
+          msg: 'success',
+          data: order
+        })
       } else {
         return Promise.reject(new Error('订单不存在'))
       }
@@ -390,7 +415,11 @@ export const orderApi = {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }
-          resolve(newOrder)
+          resolve({
+            code: 200,
+            msg: 'success',
+            data: newOrder
+          })
         }, 500)
       })
     }
@@ -407,9 +436,13 @@ export const orderApi = {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            order_id: id,
-            status: status,
-            updated_at: new Date().toISOString()
+            code: 200,
+            msg: 'success',
+            data: {
+              order_id: id,
+              status: status,
+              updated_at: new Date().toISOString()
+            }
           })
         }, 500)
       })

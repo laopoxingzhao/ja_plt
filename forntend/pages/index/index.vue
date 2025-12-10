@@ -3,10 +3,10 @@
 		<!-- 头部搜索区域 -->
 		<view class="header">
 			<view class="search-box">
-				<input class="search-input" placeholder="搜索家政服务..." v-model="searchKeyword" @confirm="searchServices"/>
+				<input class="search-input" placeholder="搜索家政服务..." v-model="searchKeyword" @confirm="searchServices" />
 			</view>
 		</view>
-		
+
 		<!-- 轮播图 -->
 		<view class="swiper-section">
 			<swiper class="swiper" indicator-dots autoplay interval="5000" duration="1000" circular>
@@ -22,23 +22,25 @@
 				</swiper-item>
 			</swiper>
 		</view>
-		
+
 		<!-- 服务分类 -->
 		<view class="service-category">
 			<view class="category-title">服务分类</view>
 			<view class="category-grid">
-				<view class="category-item" v-for="(item, index) in serviceCategories" :key="index" @click="goToService(item)">
-					<image class="category-icon" :src="item.icon"></image>
+				<view class="category-item" v-for="item in serviceCategories" :key="item.id"
+					@click="goToCategory(item)">
+					<image class="category-icon" :src="item.icon" mode="aspectFit"></image>
 					<text class="category-text">{{ item.name }}</text>
 				</view>
 			</view>
 		</view>
-		
+
 		<!-- 推荐服务 -->
 		<view class="recommended-services">
 			<view class="section-title">推荐服务</view>
 			<view class="service-list">
-				<view class="service-card" v-for="(service, index) in recommendedServices" :key="service.service_id" @click="goToServiceDetail(service)">
+				<view class="service-card" v-for="(service, index) in recommendedServices" :key="service.service_id"
+					@click="goToServiceDetail(service)">
 					<image class="service-image" :src="service.image || '/static/service-default.jpg'"></image>
 					<view class="service-info">
 						<text class="service-name">{{ service.service_name }}</text>
@@ -55,15 +57,16 @@
 </template>
 
 <script>
-	import { serviceApi } from '../../api/api.js';
-	
+	import {
+		serviceApi
+	} from '../../api/api.js';
+
 	export default {
 		data() {
 			return {
 				title: '家政服务',
 				searchKeyword: '',
-				bannerImages: [
-					{
+				bannerImages: [{
 						title: '专业保洁服务',
 						desc: '高品质家庭清洁，让您的家焕然一新'
 					},
@@ -80,16 +83,17 @@
 				recommendedServices: []
 			}
 		},
-		
+
 		onLoad() {
 			this.loadServiceCategories();
 			this.loadRecommendedServices();
 		},
-		
+
 		methods: {
 			async loadServiceCategories() {
 				try {
 					const categories = await serviceApi.getCategories();
+					console.log('获取到的服务分类:', categories);
 					this.serviceCategories = categories;
 				} catch (err) {
 					console.error('获取服务分类失败:', err);
@@ -97,15 +101,17 @@
 						title: '获取服务分类失败',
 						icon: 'none'
 					});
-					
+
 				}
 			},
-			
+
 			async loadRecommendedServices() {
 				console.log('加载推荐服务...');
-				
+
 				try {
-					const result = await serviceApi.getServices({ page_size: 3 });
+					const result = await serviceApi.getServices({
+						page_size: 3
+					});
 					// 只显示前3个服务作为推荐
 					this.recommendedServices = result.services || result.slice(0, 3);
 				} catch (err) {
@@ -114,29 +120,29 @@
 						title: '获取服务列表失败',
 						icon: 'none'
 					});
-					
+
 				}
 			},
-			
-			goToService(category) {
-				uni.showToast({
-					title: `跳转到${category.name}服务`,
-					icon: 'none'
+
+			goToCategory(category) {
+				// 根据分类ID跳转到服务列表页面，并传递分类ID作为筛选条件
+				uni.navigateTo({
+					url: `/pages/service-list/service-list?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}`
 				});
 			},
-			
+
 			goToServiceDetail(service) {
 				uni.navigateTo({
 					url: `/pages/service-detail/service-detail?id=${service.service_id}`
 				});
 			},
-			
+
 			bookService(service) {
 				uni.navigateTo({
 					url: `/pages/booking/booking?id=${service.service_id}`
 				});
 			},
-			
+
 			searchServices() {
 				if (this.searchKeyword.trim()) {
 					uni.showToast({
@@ -155,32 +161,32 @@
 		min-height: 100vh;
 		padding-bottom: 20rpx;
 	}
-	
+
 	.header {
 		background-color: #ffffff;
 		padding: 20rpx;
 		position: sticky;
 		top: 0;
 		z-index: 999;
-		box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
 	}
-	
+
 	.search-box {
 		background-color: #f0f0f0;
 		border-radius: 40rpx;
 		padding: 15rpx 30rpx;
 	}
-	
+
 	.search-input {
 		font-size: 28rpx;
 		color: #666666;
 	}
-	
+
 	.swiper-section {
 		padding: 20rpx;
 		background-color: #ffffff;
 	}
-	
+
 	.swiper {
 		height: 300rpx;
 		border-radius: 20rpx;
@@ -214,13 +220,13 @@
 		font-weight: bold;
 		display: block;
 		margin-bottom: 10rpx;
-		text-shadow: 1rpx 1rpx 2rpx rgba(0,0,0,0.5);
+		text-shadow: 1rpx 1rpx 2rpx rgba(0, 0, 0, 0.5);
 	}
 
 	.banner-desc {
 		font-size: 28rpx;
 		display: block;
-		text-shadow: 1rpx 1rpx 2rpx rgba(0,0,0,0.5);
+		text-shadow: 1rpx 1rpx 2rpx rgba(0, 0, 0, 0.5);
 	}
 
 	.banner-1 {
@@ -240,7 +246,7 @@
 		margin: 20rpx;
 		border-radius: 10rpx;
 		padding: 20rpx;
-		box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
 	}
 
 	.category-title {
@@ -279,7 +285,7 @@
 		margin: 20rpx;
 		border-radius: 10rpx;
 		padding: 20rpx;
-		box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
 	}
 
 	.section-title {

@@ -1,25 +1,8 @@
 {
-  "hash": "7405005e",
-  "configHash": "b8c34e02",
-  "lockfileHash": "f947ad57",
-  "browserHash": "d5dd96d4",
-  "optimized": {
-    "axios": {
-      "src": "../../../../../node_modules/axios/index.js",
-      "file": "axios.js",
-      "fileHash": "8c227856",
-      "needsInterop": false
-    },
-    "mockjs": {
-      "src": "../../../../../node_modules/mockjs/dist/mock.js",
-      "file": "mockjs.js",
-      "fileHash": "186e208b",
-      "needsInterop": true
-    }
-  },
-  "chunks": {
-    "chunk-P2LSHJDD": {
-      "file": "chunk-P2LSHJDD.js"
-    }
-  }
+  "hash": "609bb294",
+  "configHash": "f2134cee",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "d6fe4fbe",
+  "optimized": {},
+  "chunks": {}
 }

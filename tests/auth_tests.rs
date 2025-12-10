@@ -1,7 +1,7 @@
 use jz::utils::jwt::Claims;
 use jz::models::user::User;
 use sqlx::types::chrono::NaiveDateTime;
->>>>>>> Stashed changes
+
 //! 认证相关测试
 //!
 //! 测试用户登录、注册、刷新令牌等功能
@@ -20,11 +20,11 @@ use jz::{
 use serde_json::json;
 use sqlx::types::chrono::NaiveDateTime;
 use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
-=======
+
 use jz::utils::jwt::Claims;
 use jz::models::user::User;
 use sqlx::types::chrono::NaiveDateTime;
->>>>>>> Stashed changes
+
 
 // JWT 令牌生成测试
 #[tokio::test]
