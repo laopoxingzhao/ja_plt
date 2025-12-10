@@ -2,34 +2,33 @@
 	<view class="auth-container">
 		<view class="auth-tabs">
 			<view class="tab" :class="{ active: activeTab === 'login' }" @click="switchTab('login')">
-				登录
+				<text class="tab-text">登录</text>
 			</view>
 			<view class="tab" :class="{ active: activeTab === 'register' }" @click="switchTab('register')">
-				注册
+				<text class="tab-text">注册</text>
 			</view>
 		</view>
 
 		<view class="auth-form">
 			<!-- 登录表单 -->
 			<view v-if="activeTab === 'login'">
-				<input class="input-field" placeholder="用户名或邮箱" v-model="loginForm.identifier" />
-				<input class="input-field" placeholder="密码" password v-model="loginForm.password" />
-				<button class="auth-button" @click="handleLogin">登录</button>
+				<input class="input-field" type="text" placeholder="用户名或邮箱" v-model="loginForm.identifier" />
+				<input class="input-field" type="password" placeholder="密码" v-model="loginForm.password" />
+				<button class="auth-button" @click="handleLogin">
+					<text class="button-text">登录</text>
+				</button>
 			</view>
 
 			<!-- 注册表单 -->
 			<view v-else>
-				<input class="input-field" placeholder="用户名" v-model="registerForm.username" />
-				<input class="input-field" placeholder="邮箱" v-model="registerForm.email" />
-				<input class="input-field" placeholder="手机号" v-model="registerForm.phone" />
-				<input class="input-field" placeholder="密码" password v-model="registerForm.password" />
-				<button class="auth-button" @click="handleRegister">注册</button>
+				<input class="input-field" type="text" placeholder="用户名" v-model="registerForm.username" />
+				<input class="input-field" type="text" placeholder="邮箱" v-model="registerForm.email" />
+				<input class="input-field" type="text" placeholder="手机号" v-model="registerForm.phone" />
+				<input class="input-field" type="password" placeholder="密码" v-model="registerForm.password" />
+				<button class="auth-button" @click="handleRegister">
+					<text class="button-text">注册</text>
+				</button>
 			</view>
-		</view>
-
-		<!-- 登出按钮应该在用户已登录的情况下显示 -->
-		<view v-if="isLoggedIn" class="logout-section">
-			<button class="logout-button" @click="handleLogout">登出</button>
 		</view>
 	</view>
 </template>
@@ -44,7 +43,8 @@
 		data() {
 			return {
 				activeTab: 'login',
-				isLoggedIn: false,
+				loginFocus: false,
+				registerFocus: false,
 				loginForm: {
 					identifier: '',
 					password: ''
@@ -57,14 +57,34 @@
 				}
 			}
 		},
-		mounted() {
-			// 检查用户是否已登录
-			const token = uni.getStorageSync('token')
-			this.isLoggedIn = !!token
-		},
 		methods: {
 			switchTab(tab) {
 				this.activeTab = tab
+				// set focus flags (used by native platforms that respect :focus)
+				this.loginFocus = tab === 'login';
+				this.registerFocus = tab === 'register';
+				this.$nextTick(() => {
+					try {
+						if (tab === 'login' && this.$refs.loginIdentifier) {
+							this.$refs.loginIdentifier.focus && this.$refs.loginIdentifier.focus();
+						} else if (tab === 'register' && this.$refs.registerUsername) {
+							this.$refs.registerUsername.focus && this.$refs.registerUsername.focus();
+						}
+					} catch (e) {
+						// 某些平台/环境下 refs.focus 可能不可用，捕获以免崩溃
+						console.warn('focus failed', e);
+					}
+				});
+			},
+
+			onFocus(refName) {
+				// 占位，可用于收起遮罩/改变样式等
+				// console.log('focus', refName)
+			},
+
+			onBlur(refName) {
+				// 占位
+				// console.log('blur', refName)
 			},
 
 			async handleLogin() {
@@ -80,7 +100,6 @@
 					const res = await userApi.login(this.loginForm);
 					uni.setStorageSync('token', res.token);
 					uni.setStorageSync('user', JSON.stringify(res.user));
-					this.isLoggedIn = true
 
 					uni.showToast({
 						title: '登录成功',
@@ -118,6 +137,15 @@
 					return;
 				}
 
+				// 简单验证邮箱
+				if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.registerForm.email)) {
+					uni.showToast({
+						title: '请输入正确的邮箱地址',
+						icon: 'none'
+					});
+					return;
+				}
+
 				try {
 					const res = await userApi.register(this.registerForm);
 					uni.showToast({
@@ -144,31 +172,6 @@
 						icon: 'none'
 					});
 				}
-			},
-
-			async handleLogout() {
-				try {
-					// 调用登出API
-					await userApi.logout();
-
-					// 清除本地存储的token和用户信息
-					uni.removeStorageSync('token');
-					uni.removeStorageSync('user');
-					this.isLoggedIn = false
-
-					uni.showToast({
-						title: '登出成功',
-						icon: 'success'
-					});
-
-					// 触发登出成功事件
-					this.$emit('logout-success');
-				} catch (err) {
-					uni.showToast({
-						title: err.message || '登出失败',
-						icon: 'none'
-					});
-				}
 			}
 		}
 	}
@@ -177,55 +180,68 @@
 <style scoped>
 	.auth-container {
 		padding: 40rpx;
-		background-color: #fff;
+		background-color: #ffffff;
+		margin: 20rpx;
+		border: 2rpx solid #eeeeee;
+		border-radius: 10rpx;
 	}
 
 	.auth-tabs {
 		display: flex;
-		border-bottom: 2rpx solid #eee;
+		border-bottom: 2rpx solid #eeeeee;
 		margin-bottom: 40rpx;
 	}
 
 	.tab {
 		flex: 1;
 		text-align: center;
-		padding: 20rpx;
-		font-size: 32rpx;
-		color: #666;
+		padding: 30rpx;
 	}
 
-	.tab.active {
+	.tab-text {
+		font-size: 32rpx;
+		color: #999999;
+		font-weight: 500;
+	}
+
+	.tab.active .tab-text {
 		color: #00bfff;
-		border-bottom: 4rpx solid #00bfff;
+		font-weight: 600;
 	}
 
 	.input-field {
-		width: 100%;
-		height: 80rpx;
-		border: 2rpx solid #eee;
-		border-radius: 10rpx;
-		padding: 0 20rpx;
-		margin-bottom: 20rpx;
+		
+		padding: 25rpx;
+		margin-bottom: 25rpx;
+		border: 2rpx solid #dddddd;
+		border-radius: 8rpx;
+		
 		font-size: 28rpx;
+		background-color: #ffffff;
+		color: #333333;
+	}
+
+	.input-field::placeholder {
+		color: #999999;
+	}
+
+	.input-field:focus {
+		border-color: #00bfff;
+		outline: none;
 	}
 
 	.auth-button {
 		width: 100%;
-		height: 80rpx;
+		padding: 25rpx;
 		background-color: #00bfff;
-		color: #fff;
-		border-radius: 10rpx;
-		font-size: 32rpx;
+		border: none;
+		border-radius: 8rpx;
 		margin-top: 20rpx;
 	}
 
-	.logout-button {
-		width: 100%;
-		height: 80rpx;
-		background-color: #ff4d4f;
-		color: #fff;
-		border-radius: 10rpx;
+	.button-text {
 		font-size: 32rpx;
-		margin-top: 20rpx;
+		color: #ffffff;
+		font-weight: 500;
 	}
 </style>

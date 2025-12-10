@@ -48,7 +48,9 @@ const mockData = {
 }
 
 // 判断是否启用Mock
-const enableMock = process.env.NODE_ENV === 'development'
+// const enableMock = process.env.NODE_ENV === 'development' 
+const enableMock = false;
+
 
 // API基础URL
 const BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8000'
@@ -179,6 +181,59 @@ export const userApi = {
             }
           } else {
             reject(new Error(res.data.msg || '登录失败'))
+          }
+        },
+        fail: (err) => {
+          reject(new Error(err.errMsg || '网络错误'))
+        }
+      })
+    })
+  },
+  
+  // 用户注册
+  async register(data) {
+    // 如果启用Mock
+    if (enableMock) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            code: 201,
+            msg: '注册成功',
+            data: {
+              user: {
+                user_id: Date.now(), // 使用时间戳作为模拟ID
+                username: data.username,
+                email: data.email,
+                phone: data.phone,
+                user_type: 'customer',
+                avatar_url: null,
+                real_name: null,
+                is_verified: false,
+                balance: 0.00,
+                status: 'active',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }
+            }
+          })
+        }, 500)
+      })
+    }
+    
+    return new Promise((resolve, reject) => {
+      uni.request({
+        url: BASE_URL + '/users/register',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json'
+        },
+        data,
+        success: (res) => {
+          // 注册成功状态码是201
+          if (res.statusCode === 201) {
+            resolve(res.data.data)
+          } else {
+            reject(new Error(res.data.msg || '注册失败'))
           }
         },
         fail: (err) => {

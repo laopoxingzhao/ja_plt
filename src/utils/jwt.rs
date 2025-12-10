@@ -1,9 +1,12 @@
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
-use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey, errors::Error};
+use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey, errors::{Error, ErrorKind}};
 use crate::models::user::User;
 use std::collections::HashMap;
 use uuid::Uuid;
+use once_cell::sync::Lazy;
+use tokio::sync::RwLock;
+use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct Claims {
@@ -30,12 +33,17 @@ impl Claims {
             .as_secs() as usize;
 
         Self {
-            sub: user.user_id.to_string(),
-            iss: "jz-service".to_string(),
-            aud: "jz-client".to_string(),
-            iat: now,
-            exp: now + expiration_seconds, // 可变过期时间
-            nbf: now,
+            // 根据token类型设置aud字段
+            aud: match token_type {
+                "access" => "access-token-audience".to_string(),
+                "refresh" => "refresh-token-audience".to_string(),
+                _ => "default-audience".to_string(),
+            },
+            exp: now + expiration_seconds, // 设置过期时间为当前时间加上指定秒数
+            iat: now, // 设置签发时间为当前时间
+            iss: "jz-service".to_string(), // 设置签发者
+            nbf: now, // 设置not before时间为当前时间
+            sub: user.user_id.to_string(), // 设置subject为用户ID
             user_id: user.user_id,
             username: user.username.clone(),
             user_type: user.user_type.clone(),
@@ -45,9 +53,8 @@ impl Claims {
 
     // 生成JWT token
     pub fn generate_token(&self, secret: &str) -> Result<String, Error> {
-        let header = Header::new(Algorithm::HS256);
         let encoding_key = EncodingKey::from_secret(secret.as_ref());
-        encode(&header, self, &encoding_key)
+        encode(&Header::default(), self, &encoding_key)
     }
 
     // 验证JWT token
@@ -57,11 +64,11 @@ impl Claims {
         expected_type: Option<&str>,
     ) -> Result<Claims, Error> {
         let mut validation = Validation::new(Algorithm::HS256);
-        validation.set_audience(&["jz-client"]); // 设置期望的audience
+        validation.set_audience(&["access-token-audience", "refresh-token-audience"]); // 设置期望的audience
         validation.set_issuer(&["jz-service"]); // 设置期望的issuer
         
         // 如果指定了token类型，则验证
-        if let Some(token_type) = expected_type {
+        if expected_type.is_some() {
             validation.validate_aud = false; // 禁用aud验证以便自定义验证
         }
 
@@ -71,7 +78,7 @@ impl Claims {
         // 验证token类型
         if let Some(token_type) = expected_type {
             if decoded.claims.token_type != token_type {
-                return Err(Error::InvalidToken);
+                return Err(Error::from(ErrorKind::InvalidToken));
             }
         }
         
@@ -81,10 +88,10 @@ impl Claims {
 
 // 存储刷新令牌的简单内存存储
 // 在生产环境中，应该使用Redis或其他持久化存储
-lazy_static::lazy_static! {
-    static ref REFRESH_TOKENS: tokio::sync::RwLock<HashMap<String, (i32, String)>> = 
-        tokio::sync::RwLock::new(HashMap::new());
-}
+type RefreshTokenStore = HashMap<String, (i32, String)>;
+static REFRESH_TOKENS: Lazy<Arc<RwLock<RefreshTokenStore>>> = Lazy::new(|| {
+    Arc::new(RwLock::new(HashMap::<String, (i32, String)>::new()))
+});
 
 // 保存刷新令牌
 pub async fn store_refresh_token(token: String, user_id: i32, username: String) {

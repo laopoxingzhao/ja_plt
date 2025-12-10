@@ -5,7 +5,7 @@ use axum::{
     Json, http::StatusCode,
 };
 use sqlx::mysql::MySqlPool;
-use crate::{services::ServiceService, models::service::Service};
+use crate::{services::service_service::ServiceService, models::service::Service};
 
 pub fn routes() -> Router<MySqlPool> {
     Router::new()

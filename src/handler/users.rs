@@ -7,7 +7,7 @@ use std::env;
 
 use crate::models::auth::{LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, RefreshTokenRequest, RefreshTokenResponse, LogoutRequest};
 use crate::utils::jwt::Claims;
-use crate::services::UserService;
+use crate::services::user_service::UserService;
 use crate::services::user_service::UserServiceError;
 
 pub fn routes() -> Router<sqlx::mysql::MySqlPool> {

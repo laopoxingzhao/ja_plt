@@ -22,7 +22,15 @@
 		
 		<!-- 登录后显示的内容 -->
 		<view v-else>
-
+			<!-- 微信信息获取 -->
+			<view v-if="isWechat && !hasWechatInfo" class="section">
+				<view class="function-item" @click="getWechatInfo">
+					<image class="function-icon" src="/static/wechat-icon.png"></image>
+					<text class="function-text">获取微信信息</text>
+					<text class="arrow-icon">></text>
+				</view>
+			</view>
+			
 			<!-- 我的订单 -->
 			<view class="section">
 				<view class="section-header" @click="goToOrders">
@@ -73,6 +81,11 @@
 			</view>
 			
 			<view class="section">
+				<view class="function-item" @click="refreshUserInfo">
+					<image class="function-icon" src="/static/refresh.png"></image>
+					<text class="function-text">刷新信息</text>
+					<text class="arrow-icon">></text>
+				</view>
 				<view class="function-item">
 					<image class="function-icon" src="/static/customer-service.png"></image>
 					<text class="function-text">联系客服</text>
@@ -90,30 +103,85 @@
 
 <script>
 	import { userApi } from '../../api/api.js';
+	import { getWechatUserInfo, getSystemUserInfo } from '../../utils/user.js';
 	
 	export default {
 		data() {
 			return {
 				user: {},
-				isLoggedIn: false
+				isLoggedIn: false,
+				isWechat: false,
+				hasWechatInfo: false
 			}
 		},
 		onLoad() {
 			this.loadUserInfo();
+			
+			// 检测是否为微信环境
+			// #ifdef MP-WEIXIN
+			this.isWechat = true;
+			// #endif
+		},
+		onShow() {
+			// 页面显示时也加载用户信息，确保信息是最新的
+			this.loadUserInfo();
 		},
 		methods: {
 			loadUserInfo() {
-				const userStr = uni.getStorageSync('user');
-				const token = uni.getStorageSync('token');
-				if (userStr && token) {
-					try {
-						this.user = JSON.parse(userStr);
-						this.isLoggedIn = true;
-					} catch (e) {
-						console.error('解析用户信息失败:', e);
-					}
+				const user = getSystemUserInfo();
+				if (user) {
+					this.user = user;
+					this.isLoggedIn = true;
 				} else {
 					this.isLoggedIn = false;
+				}
+			},
+			
+			async getWechatInfo() {
+				try {
+					const wechatUserInfo = await getWechatUserInfo();
+					this.hasWechatInfo = true;
+					
+					// 可以选择将微信信息与系统用户信息合并
+					this.user = {
+						...this.user,
+						...wechatUserInfo
+					};
+					
+					// 更新本地存储
+					uni.setStorageSync('user', JSON.stringify(this.user));
+					
+					uni.showToast({
+						title: '获取成功',
+						icon: 'success'
+					});
+				} catch (err) {
+					console.error('获取微信用户信息失败:', err);
+					uni.showToast({
+						title: err.message.includes('fail') ? '获取失败' : err.message,
+						icon: 'none'
+					});
+				}
+			},
+			
+			async refreshUserInfo() {
+				try {
+					const userInfo = await userApi.getUserProfile();
+					this.user = userInfo;
+					
+					// 更新本地存储
+					uni.setStorageSync('user', JSON.stringify(userInfo));
+					
+					uni.showToast({
+						title: '信息已更新',
+						icon: 'success'
+					});
+				} catch (err) {
+					console.error('获取用户信息失败:', err);
+					uni.showToast({
+						title: '获取信息失败',
+						icon: 'none'
+					});
 				}
 			},
 			

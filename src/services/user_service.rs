@@ -148,12 +148,11 @@ impl UserService {
             .await
             .ok_or(UserServiceError::TokenError("无效的刷新令牌".to_string()))?;
 
-        // 获取用户信息
-        let user = self.user_repo.find_by_id(user_id).await?;
-
-        let user = match user {
-            Some(user) => user,
-            None => return Err(UserServiceError::TokenError("用户不存在".to_string())),
+        // 获取用户信息，显式处理 RowNotFound 返回自定义错误
+        let user = match self.user_repo.find_by_id(user_id).await {
+            Ok(u) => u,
+            Err(sqlx::Error::RowNotFound) => return Err(UserServiceError::TokenError("用户不存在".to_string())),
+            Err(e) => return Err(UserServiceError::from(e)),
         };
 
         // 获取JWT密钥
