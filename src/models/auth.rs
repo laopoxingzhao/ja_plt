@@ -21,6 +21,9 @@ pub struct LoginResponse {
     /// JWT Token
     pub token: String,
     
+    /// 刷新令牌
+    pub refresh_token: String,
+    
     /// 用户信息
     pub user: User,
 }
@@ -46,4 +49,28 @@ pub struct RegisterRequest {
 pub struct RegisterResponse {
     /// 用户信息
     pub user: User,
+}
+
+/// 刷新令牌请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RefreshTokenRequest {
+    /// 刷新令牌
+    pub refresh_token: String,
+}
+
+/// 刷新令牌响应
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RefreshTokenResponse {
+    /// 新的JWT Token
+    pub token: String,
+    
+    /// 新的刷新令牌
+    pub refresh_token: String,
+}
+
+/// 登出请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LogoutRequest {
+    /// 刷新令牌
+    pub refresh_token: String,
 }

@@ -14,6 +14,75 @@ impl UserRepository {
         Self { pool }
     }
 
+    /// 获取所有用户列表
+    pub async fn list_users(&self) -> Result<Vec<User>, sqlx::Error> {
+        let users_result = sqlx::query(
+            "SELECT user_id, username, password_hash, email, phone, user_type, avatar_url, \
+            real_name, is_verified, balance, status, created_at, updated_at \
+            FROM users"
+        )
+        .fetch_all(&self.pool)
+        .await;
+
+        match users_result {
+            Ok(rows) => {
+                let users: Vec<User> = rows.into_iter().map(|row| {
+                    User {
+                        user_id: row.get("user_id"),
+                        username: row.get("username"),
+                        password_hash: row.get("password_hash"),
+                        email: row.get("email"),
+                        phone: row.get("phone"),
+                        user_type: row.get("user_type"),
+                        avatar_url: row.get("avatar_url"),
+                        real_name: row.get("real_name"),
+                        is_verified: row.get("is_verified"),
+                        balance: row.get("balance"),
+                        status: row.get("status"),
+                        created_at: row.get("created_at"),
+                        updated_at: row.get("updated_at"),
+                    }
+                }).collect();
+                Ok(users)
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    /// 根据ID查找用户
+    pub async fn find_by_id(&self, id: i32) -> Result<User, sqlx::Error> {
+        let user_result = sqlx::query(
+            "SELECT user_id, username, password_hash, email, phone, user_type, avatar_url, \
+            real_name, is_verified, balance, status, created_at, updated_at \
+            FROM users WHERE user_id = ?"
+        )
+        .bind(id)
+        .fetch_one(&self.pool)
+        .await;
+
+        match user_result {
+            Ok(row) => {
+                let user = User {
+                    user_id: row.get("user_id"),
+                    username: row.get("username"),
+                    password_hash: row.get("password_hash"),
+                    email: row.get("email"),
+                    phone: row.get("phone"),
+                    user_type: row.get("user_type"),
+                    avatar_url: row.get("avatar_url"),
+                    real_name: row.get("real_name"),
+                    is_verified: row.get("is_verified"),
+                    balance: row.get("balance"),
+                    status: row.get("status"),
+                    created_at: row.get("created_at"),
+                    updated_at: row.get("updated_at"),
+                };
+                Ok(user)
+            }
+            Err(e) => Err(e),
+        }
+    }
+
     /// 根据用户名或邮箱查找用户
     pub async fn find_by_identifier(&self, identifier: &str) -> Result<Option<User>, sqlx::Error> {
         let user_result = sqlx::query(

@@ -10,9 +10,11 @@ use sqlx::mysql::MySqlPool;
 use std::fmt;
 
 use crate::{
-    models::{user::User, auth::{LoginRequest, RegisterRequest}},
+    models::{user::User, auth::{LoginRequest, RegisterRequest, RefreshTokenRequest, LogoutRequest}},
     repositories::UserRepository,
+    utils::jwt::{Claims, store_refresh_token, validate_refresh_token, remove_refresh_token, generate_refresh_token},
 };
+use std::env;
 
 #[derive(Debug)]
 pub enum UserServiceError {
@@ -20,6 +22,7 @@ pub enum UserServiceError {
     AuthenticationError(String),
     RegistrationError(String),
     PasswordHashError(argon2::password_hash::Error),
+    TokenError(String),
 }
 
 impl fmt::Display for UserServiceError {
@@ -29,6 +32,7 @@ impl fmt::Display for UserServiceError {
             UserServiceError::AuthenticationError(msg) => write!(f, "认证错误: {}", msg),
             UserServiceError::RegistrationError(msg) => write!(f, "注册错误: {}", msg),
             UserServiceError::PasswordHashError(e) => write!(f, "密码哈希错误: {}", e),
+            UserServiceError::TokenError(msg) => write!(f, "令牌错误: {}", msg),
         }
     }
 }
@@ -45,6 +49,12 @@ impl From<argon2::password_hash::Error> for UserServiceError {
     }
 }
 
+impl From<jsonwebtoken::errors::Error> for UserServiceError {
+    fn from(error: jsonwebtoken::errors::Error) -> Self {
+        UserServiceError::TokenError(format!("令牌错误: {:?}", error))
+    }
+}
+
 pub struct UserService {
     user_repo: UserRepository,
 }
@@ -56,8 +66,18 @@ impl UserService {
         }
     }
 
+    /// 获取用户列表
+    pub async fn list_users(&self) -> Result<Vec<User>, UserServiceError> {
+        self.user_repo.list_users().await.map_err(UserServiceError::from)
+    }
+
+    /// 根据ID获取用户
+    pub async fn get_user_by_id(&self, id: i32) -> Result<User, UserServiceError> {
+        self.user_repo.find_by_id(id).await.map_err(UserServiceError::from)
+    }
+
     /// 用户登录
-    pub async fn login(&self, payload: &LoginRequest) -> Result<User, UserServiceError> {
+    pub async fn login(&self, payload: &LoginRequest) -> Result<(String, String, User), UserServiceError> {
         // 查询用户信息
         let user = self.user_repo.find_by_identifier(&payload.identifier).await?;
 
@@ -71,7 +91,21 @@ impl UserService {
             return Err(UserServiceError::AuthenticationError("用户名或密码错误".to_string()));
         }
 
-        Ok(user)
+        // 获取JWT密钥
+        let jwt_secret = env::var("JWT_SECRET")
+            .unwrap_or_else(|_| "secret-development-key".to_string());
+
+        // 生成访问令牌
+        let access_claims = Claims::new(&user, "access", 3600); // 1小时过期
+        let access_token = access_claims.generate_token(&jwt_secret)?;
+
+        // 生成刷新令牌
+        let refresh_token = generate_refresh_token();
+        
+        // 存储刷新令牌
+        store_refresh_token(refresh_token.clone(), user.user_id, user.username.clone()).await;
+
+        Ok((access_token, refresh_token, user))
     }
 
     /// 用户注册
@@ -105,6 +139,46 @@ impl UserService {
             Some(user) => Ok(user),
             None => Err(UserServiceError::RegistrationError("注册成功但获取用户信息失败".to_string())),
         }
+    }
+
+    /// 刷新访问令牌
+    pub async fn refresh_token(&self, payload: &RefreshTokenRequest) -> Result<(String, String), UserServiceError> {
+        // 验证刷新令牌
+        let (user_id, username) = validate_refresh_token(&payload.refresh_token)
+            .await
+            .ok_or(UserServiceError::TokenError("无效的刷新令牌".to_string()))?;
+
+        // 获取用户信息
+        let user = self.user_repo.find_by_id(user_id).await?;
+
+        let user = match user {
+            Some(user) => user,
+            None => return Err(UserServiceError::TokenError("用户不存在".to_string())),
+        };
+
+        // 获取JWT密钥
+        let jwt_secret = env::var("JWT_SECRET")
+            .unwrap_or_else(|_| "secret-development-key".to_string());
+
+        // 生成新的访问令牌
+        let access_claims = Claims::new(&user, "access", 3600); // 1小时过期
+        let access_token = access_claims.generate_token(&jwt_secret)?;
+
+        // 生成新的刷新令牌
+        let new_refresh_token = generate_refresh_token();
+        
+        // 删除旧的刷新令牌，存储新的刷新令牌
+        remove_refresh_token(&payload.refresh_token).await;
+        store_refresh_token(new_refresh_token.clone(), user.user_id, user.username.clone()).await;
+
+        Ok((access_token, new_refresh_token))
+    }
+
+    /// 用户登出
+    pub async fn logout(&self, payload: &LogoutRequest) -> Result<(), UserServiceError> {
+        // 移除刷新令牌
+        remove_refresh_token(&payload.refresh_token).await;
+        Ok(())
     }
 
     fn hash_password(&self, password: &str) -> Result<String, argon2::password_hash::Error> {

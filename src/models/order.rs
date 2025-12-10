@@ -3,43 +3,45 @@
 //! 对应数据库中的 orders 和 order_addons 表
 
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
+use sqlx::types::chrono::{NaiveDateTime, NaiveDate};
 
 /// 订单模型
 /// 对应 orders 表
 /// 
-/// 存储用户订单的完整信息，包括服务详情、价格、状态等
+/// orders 表存储系统中的所有订单信息
+/// 订单状态流转: pending -> confirmed -> assigned -> ongoing -> completed/cancelled
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Order {
-    /// 订单号，唯一标识符
+    /// 订单编号 (主键)
+    /// 格式: YYYYMMDDXXXXXX (日期+6位自增序列)
     pub order_id: String,
     
-    /// 客户ID (外键)
+    /// 客户ID (外键关联 users 表)
     pub customer_id: i32,
     
-    /// 服务人员ID (外键，可选)
+    /// 服务人员ID (外键关联 users 表，可为空)
     pub worker_id: Option<i32>,
     
-    /// 地址ID (外键)
+    /// 地址ID (外键关联 user_addresses 表)
     pub address_id: i32,
     
-    /// 服务ID (外键)
+    /// 服务项目ID (外键关联 services 表)
     pub service_id: i32,
     
-    /// 优惠券ID (外键，可选)
+    /// 优惠券ID (外键关联 coupons 表，可为空)
     pub coupon_id: Option<i32>,
     
     /// 服务日期
-    pub service_date: chrono::NaiveDate,
+    pub service_date: NaiveDate,
     
-    /// 服务时段，枚举值:
-    /// - "morning": 上午
-    /// - "afternoon": 下午
-    /// - "evening": 晚上
-    /// - "full_day": 全天
+    /// 时间段，枚举值:
+    /// - "morning": 上午 (09:00-12:00)
+    /// - "afternoon": 下午 (12:00-18:00)
+    /// - "evening": 晚上 (18:00-22:00)
+    /// - "full_day": 全天 (09:00-22:00)
     pub time_slot: String,
     
-    /// 服务时长
+    /// 服务时长/数量
     pub duration: f64,
     
     /// 单价
@@ -75,35 +77,35 @@ pub struct Order {
     /// 取消原因 (可选)
     pub cancellation_reason: Option<String>,
     
-    /// 计划开始时间 (可选)
-    pub scheduled_start_time: Option<chrono::NaiveDateTime>,
+    /// 计划开始时间
+    pub scheduled_start_time: Option<NaiveDateTime>,
     
-    /// 实际开始时间 (可选)
-    pub actual_start_time: Option<chrono::NaiveDateTime>,
+    /// 实际开始时间
+    pub actual_start_time: Option<NaiveDateTime>,
     
-    /// 实际结束时间 (可选)
-    pub actual_end_time: Option<chrono::NaiveDateTime>,
+    /// 实际结束时间
+    pub actual_end_time: Option<NaiveDateTime>,
     
     /// 订单创建时间
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: NaiveDateTime,
     
     /// 订单更新时间
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
-/// 订单附加项模型
+/// 订单附加服务模型
 /// 对应 order_addons 表
 /// 
-/// 记录订单中选择的附加服务项目
+/// order_addons 表存储订单选择的附加服务信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OrderAddon {
-    /// 订单附加项ID (主键)
+    /// 订单附加服务ID (主键)
     pub order_addon_id: i32,
     
-    /// 关联订单ID (外键)
+    /// 订单ID (外键关联 orders 表)
     pub order_id: String,
     
-    /// 附加项ID (外键)
+    /// 附加服务ID (外键关联 service_addons 表)
     pub addon_id: i32,
     
     /// 数量
@@ -113,5 +115,5 @@ pub struct OrderAddon {
     pub unit_price: f64,
     
     /// 创建时间
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: NaiveDateTime,
 }
