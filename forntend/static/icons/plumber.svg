@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="80" height="80" rx="40" fill="#FF9800"/>
-  <path d="M25 30 L55 30 L55 50 L25 50 Z" fill="none" stroke="white" stroke-width="4"/>
-  <path d="M35 25 L35 55 M45 25 L45 55" stroke="white" stroke-width="4"/>
-  <circle cx="30" cy="40" r="3" fill="white"/>
-  <circle cx="50" cy="40" r="3" fill="white"/>
-</svg>
