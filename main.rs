@@ -57,13 +57,13 @@ async fn main() -> anyhow::Result<()> {
         .with_state(Arc::new(app_state));
 
     // 从环境变量读取主机和端口，默认为 0.0.0.0:8000
-    let host = env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
     let port = env::var("PORT").unwrap_or_else(|_| "8000".to_string());
     let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
 
     println!("🚀 正在家政服务API服务器 {}", addr);
     // println!("📖 文档地址: http://{}:{}/docs", host, port);
-    println!("📁 静态文件服务: http://{}:{}/assets/", host, port);
+    // println!("📁 静态文件服务: http://{}:{}/assets/", host, port);
 
     // 绑定到地址并启动服务器（使用 hyper::Server）
     let listener = tokio::net::TcpListener::bind(&addr).await?;
